@@ -228,6 +228,11 @@ header{position:sticky}
 /* Large tap targets for touch (Apple HIG 44px) */
 .tabs button,.btn{min-height:44px}
 .human-check{min-height:48px}
+/* ---------- CSS STEP 9: Password eye toggle (show/hide) ---------- */
+.pass-wrap{position:relative;width:100%;max-width:100%}
+.pass-wrap input{width:100%;padding-right:46px}
+.eye-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;font-size:18px;cursor:pointer;padding:8px;min-width:38px;min-height:38px;line-height:1;opacity:.65;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.eye-btn:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -252,7 +257,7 @@ header{position:sticky}
 
 <div id="empLogin">
 <label>Employee ID</label><input id="empId" placeholder="e.g.: EMP001" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
-<label>Password</label><input id="empPass" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+<label>Password</label><div class="pass-wrap"><input id="empPass" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button type="button" class="eye-btn" onclick="togglePass('empPass',this)" title="Show/Hide">👁️</button></div>
 <button class="btn btn-green" type="button" onclick="employeeLogin()">✅ Login / Mark Attendance</button>
 <div style="text-align:center"><button class="forgot-link" type="button" onclick="openEmpForgotModal()">Forgot Password? Reset via Mobile 📱</button></div>
 </div>
@@ -280,7 +285,7 @@ header{position:sticky}
 <!-- STEP 1B-iv: Step 3 Password + Forgot (DIRECT after Verify & Continue, reset link ONLY here) -->
 <div id="admStep4" class="adm-step hidden">
 <h4>3️⃣ Step 3: Input Password</h4>
-<label>Password</label><input id="admPass" type="password" placeholder="Admin password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+<label>Password</label><div class="pass-wrap"><input id="admPass" type="password" placeholder="Admin password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button type="button" class="eye-btn" onclick="togglePass('admPass',this)" title="Show/Hide">👁️</button></div>
 <button class="btn btn-blue" type="button" onclick="adminLogin()">🔓 Admin Login</button>
 <div style="text-align:center"><button class="forgot-link" onclick="openForgotModal()">Forgot Password? Reset via Security Questions 📱</button></div>
 <div style="text-align:center;margin-top:6px"><button class="forgot-link" style="font-size:12px;color:#64748b" onclick="admBackToId2()">⬅ Back</button></div>
@@ -304,7 +309,7 @@ header{position:sticky}
 <div class="topbar"><h2>🙏 Hello, <span id="empName"></span> (<span id="empShowId"></span>)</h2><button class="btn btn-grey btn-small" onclick="openEmpSettings()">⚙️ Settings</button></div>
 <p style="font-size:14px;color:#475569">Designation: <b id="empDesg"></b> | Store: <b id="empStore"></b> | Today's Status: <b id="todayStatus">—</b></p>
 <p id="empStoreLinkWrap" style="font-size:13px;margin-top:4px"><a id="empStoreLink" class="maplink" target="_blank" href="#">🏬 View Store Location</a></p>
-<div class="rule-box" style="margin-top:10px">⏰ <b>Time Rules:</b> IN: <b>8:00 AM – 12:00 PM</b> | OUT: <b>until 11:59:50 PM</b> | <b>OUT before 6 PM = Half Day 🟠</b> | Back-date ❌ (today only)<br>📍 <b>Location Rule:</b> IN/OUT/Store Close works only within <b>50 meters of the Store</b> — outside this range punch is BLOCKED + status <b>Absent</b> ❌</div>
+<div class="rule-box" style="margin-top:10px">⏰ <b>Time Rules:</b> IN: <b>8:00 AM – 12:00 PM</b> | OUT: <b>until 11:59:50 PM</b> | <b>OUT before 6 PM = Half Day 🟠</b> | Back-date ❌ (today only)<br>📍 <b>Location Rule:</b> IN/OUT/Store Close works only within <b>125 meters of the Store</b> — outside this range punch is BLOCKED + status <b>Absent</b> ❌</div>
 <div id="todayHolidayNotice" class="holiday-banner ok hidden"></div>
 
 <div class="grid2" style="margin-top:14px">
@@ -369,18 +374,18 @@ header{position:sticky}
 
 <div class="card">
 <h2>➕ Create New Employee ID</h2>
-<div class="info">Admin sets the Employee ID <b>manually</b> — type a unique ID yourself (e.g. EMP001). Store Name + <b>Latitude/Longitude</b> + Location link are required (for the 50m punch check).</div>
+<div class="info">Admin sets the Employee ID <b>manually</b> — type a unique ID yourself (e.g. EMP001). Store Name + <b>Latitude/Longitude</b> + Location link are required (for the 125m punch check).</div>
 <div class="grid2">
 <div><label>Employee Name *</label><input id="nName" placeholder="e.g.: Aditya Kumar"></div>
 <div><label>Employee ID * (manual — set by Admin)</label><input id="nId" placeholder="e.g.: EMP001 — manually type"><div class="hint">✍️ Admin types a unique ID manually. Duplicate IDs are not allowed. Use ↻ for a suggestion.</div></div>
-<div><label>Password * (preset: MAIPL@001)</label><input id="nPass" value="MAIPL@001" placeholder="MAIPL@001"><div class="hint">🔑 Default preset: <b>MAIPL@001</b> — change it here if needed.</div></div>
+<div><label>Password * (preset: MAIPL@001)</label><div class="pass-wrap"><input id="nPass" type="password" value="MAIPL@001" placeholder="MAIPL@001"><button type="button" class="eye-btn" onclick="togglePass('nPass',this)" title="Show/Hide">👁️</button></div><div class="hint">🔑 Default preset: <b>MAIPL@001</b> — change it here if needed.</div></div>
 <div><label>Designation</label><input id="nDesg" placeholder="e.g.: Helper, Driver"></div>
 <div><label>Mobile</label><input id="nMob" placeholder="Mobile number"></div>
 <div><label>🏬 Store Name *</label><input id="nStore" placeholder="e.g.: Main Branch, Mumbai Store"></div>
 <div><label>🏙️ Store Area</label><input id="nStoreArea" placeholder="e.g.: Andheri West, Mumbai"><div class="hint">Area/locality of the Store (optional, shown in tables).</div></div>
 <div><label>🧭 Store Latitude * (e.g. 19.0760)</label><input id="nStoreLat" type="number" step="any" placeholder="e.g.: 19.0760"></div>
 <div><label>🧭 Store Longitude * (e.g. 72.8777)</label><input id="nStoreLon" type="number" step="any" placeholder="e.g.: 72.8777"></div>
-<div style="grid-column:1/-1"><label>📍 Store Location (Via Link) *</label><input id="nStoreLink" class="link-input" placeholder="Paste Google Maps link e.g.: https://maps.google.com/?q=19.07,72.87"><div class="hint">The Link is auto-generated when you enter Lat/Lon. Or paste a Link and extract Lat/Lon with 🔗 — this location is used for the 50m punch check.</div>
+<div style="grid-column:1/-1"><label>📍 Store Location (Via Link) *</label><input id="nStoreLink" class="link-input" placeholder="Paste Google Maps link e.g.: https://maps.google.com/?q=19.07,72.87"><div class="hint">The Link is auto-generated when you enter Lat/Lon. Or paste a Link and extract Lat/Lon with 🔗 — this location is used for the 125m punch check.</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
 <button class="btn btn-grey btn-small" onclick="fillLinkFromLatLon()">📍 Generate Link from Lat/Lon</button>
 <button class="btn btn-grey btn-small" onclick="fillLatLonFromLink()">🔗 Extract Lat/Lon from Link</button>
@@ -400,7 +405,7 @@ header{position:sticky}
 
 <div class="card">
 <h2>🏬 Store Areas — Location Wise</h2>
-<div class="info">Every Store's <b>Name + Area + Latitude/Longitude + Maps Link</b> appears here (auto-grouped from employee Stores). The 50m punch check uses this location.</div>
+<div class="info">Every Store's <b>Name + Area + Latitude/Longitude + Maps Link</b> appears here (auto-grouped from employee Stores). The 125m punch check uses this location.</div>
 <div class="table-wrap" style="overflow-x:auto"><table id="storeTable"><thead><tr><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Latitude</th><th>🧭 Longitude</th><th>📍 Maps Link</th><th>👥 Employees</th></tr></thead><tbody></tbody></table></div>
 </div>
 
@@ -445,11 +450,11 @@ header{position:sticky}
 <div class="info">Current Admin ID: <b id="curAdmIdShow">admin</b> | Mobile: <b id="curAdmMobShow">-</b> | Security Qs: <b id="curAdmSecShow">-</b> — update the Admin login + 4 recovery answers here.</div>
 <!-- STEP 3E-i: Admin basic fields (verify + new ID + mobile Q1) -->
 <div class="grid2">
-<div><label>Current Password * (verification)</label><input id="cAdmCurPass" type="password" placeholder="Enter current password"></div>
+<div><label>Current Password * (verification)</label><div class="pass-wrap"><input id="cAdmCurPass" type="password" placeholder="Enter current password"><button type="button" class="eye-btn" onclick="togglePass('cAdmCurPass',this)" title="Show/Hide">👁️</button></div></div>
 <div><label>New Admin ID *</label><input id="cAdmId" placeholder="e.g.: admin002"></div>
 <div><label>❓ Q1: Admin Mobile Number * (for password recovery)</label><input id="cAdmMob" type="tel" maxlength="10" placeholder="10-digit mobile number"></div>
-<div><label>New Password *</label><input id="cAdmNewPass" type="password" placeholder="Enter new password"></div>
-<div style="grid-column:1/-1"><label>Confirm New Password *</label><input id="cAdmConfPass" type="password" placeholder="Confirm new password"></div>
+<div><label>New Password *</label><div class="pass-wrap"><input id="cAdmNewPass" type="password" placeholder="Enter new password"><button type="button" class="eye-btn" onclick="togglePass('cAdmNewPass',this)" title="Show/Hide">👁️</button></div></div>
+<div style="grid-column:1/-1"><label>Confirm New Password *</label><div class="pass-wrap"><input id="cAdmConfPass" type="password" placeholder="Confirm new password"><button type="button" class="eye-btn" onclick="togglePass('cAdmConfPass',this)" title="Show/Hide">👁️</button></div></div>
 </div>
 <!-- STEP 3E-ii: Security questions Q2/Q3/Q4 (compulsory for forget-password, one wrong answer = no reset) -->
 <div class="info" style="margin-top:14px">🛡️ <b>Security Questions (compulsory for Forget Password):</b> saving all three answers is required. All four (Mobile + these 3) must match at reset time.</div>
@@ -481,8 +486,8 @@ header{position:sticky}
 <label>❓ Q2: Favorite Movie *</label><input id="fAdmMovie" placeholder="Your favorite movie">
 <label>❓ Q3: Birth Place *</label><input id="fAdmBirth" placeholder="Your birth place">
 <label>❓ Q4: Class 10th School Name *</label><input id="fAdmSchool" placeholder="Your class 10th school name">
-<label>New Password *</label><input id="fAdmNewPass" type="password" placeholder="Enter new password">
-<label>Confirm New Password *</label><input id="fAdmConfPass" type="password" placeholder="Confirm new password">
+<label>New Password *</label><div class="pass-wrap"><input id="fAdmNewPass" type="password" placeholder="Enter new password"><button type="button" class="eye-btn" onclick="togglePass('fAdmNewPass',this)" title="Show/Hide">👁️</button></div>
+<label>Confirm New Password *</label><div class="pass-wrap"><input id="fAdmConfPass" type="password" placeholder="Confirm new password"><button type="button" class="eye-btn" onclick="togglePass('fAdmConfPass',this)" title="Show/Hide">👁️</button></div>
 <div class="modal-btns" style="margin-top:14px">
 <button class="btn btn-grey" onclick="closeForgotModal()">❌ Cancel</button>
 <button class="btn btn-green" onclick="resetAdminPassword()">🔄 Reset Password</button>
@@ -511,9 +516,9 @@ header{position:sticky}
 <label>3. Designation</label><input id="sEmpDesg" readonly>
 <label>4. Store</label><input id="sEmpStore" readonly>
 <div class="info" style="margin-top:14px">🔐 <b>Password Change:</b> enter the current password, then type the new password twice.</div>
-<label>Current Password *</label><input id="sEmpCurPass" type="password" placeholder="Current password">
-<label>New Password * (min 4 chars)</label><input id="sEmpNewPass" type="password" placeholder="New password">
-<label>Confirm New Password *</label><input id="sEmpConfPass" type="password" placeholder="Confirm new password">
+<label>Current Password *</label><div class="pass-wrap"><input id="sEmpCurPass" type="password" placeholder="Current password"><button type="button" class="eye-btn" onclick="togglePass('sEmpCurPass',this)" title="Show/Hide">👁️</button></div>
+<label>New Password * (min 4 chars)</label><div class="pass-wrap"><input id="sEmpNewPass" type="password" placeholder="New password"><button type="button" class="eye-btn" onclick="togglePass('sEmpNewPass',this)" title="Show/Hide">👁️</button></div>
+<label>Confirm New Password *</label><div class="pass-wrap"><input id="sEmpConfPass" type="password" placeholder="Confirm new password"><button type="button" class="eye-btn" onclick="togglePass('sEmpConfPass',this)" title="Show/Hide">👁️</button></div>
 <div class="modal-btns" style="margin-top:14px">
 <button class="btn btn-grey" onclick="closeEmpSettings()">❌ Close</button>
 <button class="btn btn-green" onclick="empChangePassword()">🔄 Change Password</button>
@@ -527,8 +532,8 @@ header{position:sticky}
 <p style="text-align:center">Enter your <b>Employee ID + Registered Mobile</b> — the new password is set only if both match.</p>
 <label>Employee ID *</label><input id="eForgotId" placeholder="e.g.: EMP001">
 <label>Registered Mobile Number *</label><input id="eForgotMob" type="tel" maxlength="10" placeholder="Mobile number given to Admin">
-<label>New Password * (min 4 chars)</label><input id="eForgotNewPass" type="password" placeholder="New password">
-<label>Confirm New Password *</label><input id="eForgotConfPass" type="password" placeholder="Confirm new password">
+<label>New Password * (min 4 chars)</label><div class="pass-wrap"><input id="eForgotNewPass" type="password" placeholder="New password"><button type="button" class="eye-btn" onclick="togglePass('eForgotNewPass',this)" title="Show/Hide">👁️</button></div>
+<label>Confirm New Password *</label><div class="pass-wrap"><input id="eForgotConfPass" type="password" placeholder="Confirm new password"><button type="button" class="eye-btn" onclick="togglePass('eForgotConfPass',this)" title="Show/Hide">👁️</button></div>
 <div class="modal-btns" style="margin-top:14px">
 <button class="btn btn-grey" onclick="closeEmpForgotModal()">❌ Cancel</button>
 <button class="btn btn-green" onclick="resetEmpPassword()">🔄 Reset Password</button>
@@ -540,8 +545,8 @@ header{position:sticky}
 <div class="modal-box" style="text-align:left">
 <h3 style="text-align:center">🔑 First Login — Password Change Compulsory</h3>
 <p style="text-align:center">Welcome <b id="firstLoginName"></b>! Setting a new password on first login is <b>compulsory</b> (change the preset <b>MAIPL@001</b>). You cannot proceed without changing it.</p>
-<label>New Password * (min 4 chars, different from MAIPL@001)</label><input id="firstNewPass" type="password" placeholder="New password">
-<label>Confirm New Password *</label><input id="firstConfPass" type="password" placeholder="Confirm new password">
+<label>New Password * (min 4 chars, different from MAIPL@001)</label><div class="pass-wrap"><input id="firstNewPass" type="password" placeholder="New password"><button type="button" class="eye-btn" onclick="togglePass('firstNewPass',this)" title="Show/Hide">👁️</button></div>
+<label>Confirm New Password *</label><div class="pass-wrap"><input id="firstConfPass" type="password" placeholder="Confirm new password"><button type="button" class="eye-btn" onclick="togglePass('firstConfPass',this)" title="Show/Hide">👁️</button></div>
 <div class="modal-btns" style="margin-top:14px">
 <button class="btn btn-green" onclick="firstLoginChange()">✅ Set New Password & Continue</button>
 </div>
@@ -688,7 +693,7 @@ function importAllJSON(input){
   rd.readAsText(f);
 }
 function copyTransferHelp(){
-  const t='Dusre device / PC me login kaise kare:\n1. Purane device me Admin login → Backup Download karo\n2. File WhatsApp/share karke naye device (PC) me bhejo\n3. Naye device me website kholo — LOGIN KE BINA neeche Backup Upload se Restore karo\n4. Ab Employee + Admin dono login honge ✅\n(Restore se pehle naye PC me default admin / Admin@124 se bhi login ho sakta hai)';
+  const t='Dusre device / PC me login kaise kare:\n1. Purane device me Admin login → Backup Download karo\n2. File WhatsApp/share karke naye device (PC) me bhejo\n3. Naye device me Admin login → Backup Upload se Restore karo\n4. Ab wahi Employee ID + Admin kisi bhi device me login hogi ✅\n(NOTE: Admin sirf 1 hi hai — Restore ke baad naye device pe sirf wahi single Admin ID chalega, default BLOCK rahega)';
   try{navigator.clipboard.writeText(t);alert('📋 Steps copied! Paste karke share karo.');}catch(e){alert(t);}
 }
 // STEP 0A: Month helpers (employee month-wise view + new-month auto reset)
@@ -714,6 +719,8 @@ function checkStorageWarn(){
 }
 // Mobile auto-capital/space fix: ID compare me extra spaces + case ignore (password exact, sirf trim)
 function normId(s){return String(s||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim().replace(/\s+/g,'');}
+// Password eye toggle: har password input pe 👁️ button — show/hide (login + change + forgot + first-login sab me)
+function togglePass(id,btn){try{const el=document.getElementById(id);if(!el)return;const show=el.type==='password';el.type=show?'text':'password';if(btn)btn.textContent=show?'🙈':'👁️';try{el.focus();}catch(e){}}catch(e){}}
 function sesRemaining(){const s=getSession();if(!s||!s.loginAt)return 0;return sesTimeoutFor(s)-(Date.now()-s.loginAt);}
 function startSesTimers(){
   stopSesTimers();
@@ -932,17 +939,27 @@ function resetAdmSteps(){
   const h=document.getElementById('humanChk');if(h)h.checked=false;
   refreshCaptcha();
 }
-// Multi-device allow: saved admin + built-in default (admin/Admin@124) dono se login chalega — koi bhi device kabhi lock nahi hoga.
+// SINGLE-ADMIN RULE: Sirf 1 Admin ID har device pe. Custom admin save hote hi default (admin/Admin@124) BLOCK.
+// Fresh device (koi custom save nahi) pe default chalega, backup import ke baad wahi single backup wala admin chalega.
+function hasCustomAdmin(){try{const raw=localStorage.getItem(K_ADMIN);if(!raw)return false;const a=JSON.parse(raw);return !!(a&&a.id&&a.pass);}catch(e){return false;}}
 function admMatchId(id){
-  const nid=String(id||'').toLowerCase();
-  try{const ad=getAdmin();if(nid===normId(ad.id).toLowerCase())return ad.id;}catch(e){}
+  const nid=normId(id).toLowerCase();
+  if(!nid)return '';
+  if(hasCustomAdmin()){
+    try{const ad=getAdmin();if(nid===normId(ad.id).toLowerCase())return ad.id;}catch(e){}
+    return '';
+  }
   try{if(nid===normId(DEFAULT_ADMIN.id).toLowerCase())return DEFAULT_ADMIN.id;}catch(e){}
   return '';
 }
 function admMatchPass(id,pass){
   const p=String(pass||'').trim();
-  try{const ad=getAdmin();if(normId(id).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass)return ad;}catch(e){}
-  try{if(normId(id).toLowerCase()===normId(DEFAULT_ADMIN.id).toLowerCase()&&p===DEFAULT_ADMIN.pass)return {...DEFAULT_ADMIN};}catch(e){}
+  const nid=normId(id).toLowerCase();
+  if(hasCustomAdmin()){
+    try{const ad=getAdmin();if(nid===normId(ad.id).toLowerCase()&&p===ad.pass)return ad;}catch(e){}
+    return null;
+  }
+  try{if(nid===normId(DEFAULT_ADMIN.id).toLowerCase()&&p===DEFAULT_ADMIN.pass)return {...DEFAULT_ADMIN};}catch(e){}
   return null;
 }
 function refreshCaptcha(){
@@ -951,7 +968,7 @@ function refreshCaptcha(){
   const q=document.getElementById('captchaQ');if(q)q.textContent=a+' + '+b+' = ?';
   const c=document.getElementById('captchaAns');if(c)c.value='';
 }
-// STEP 5A: Step-1 Admin ID verify (multi-device: saved + default dono allow)
+// STEP 5A: Step-1 Admin ID verify (SINGLE-ADMIN: sirf 1 ID — custom save hai to wahi, nahi to default)
 function admNextToHuman(){
   const id=normId(document.getElementById('admId').value);
   if(!id) return alert('Please enter Admin ID');
@@ -986,7 +1003,7 @@ const rawId=document.getElementById('empId').value, rawP=document.getElementById
 const id=normId(rawId), p=String(rawP||'').trim();
 if(!id||!p) return alert('Please enter ID and Password');
 const all=getEmp();
-if(!all.length) return alert('❌ Wrong ID or Password!');
+if(!all.length) return alert('❌ Is device me koi Employee data nahi hai!\nPurane device se Backup Download karke naye device me Admin panel → Backup Upload se Restore karo, phir wahi ID yahan login hogi ✅');
 const f=all.find(x=>normId(x.id).toLowerCase()===id.toLowerCase()&&String(x.pass)===p);
 if(!f){
   const idExists=all.some(x=>normId(x.id).toLowerCase()===id.toLowerCase());
@@ -1155,7 +1172,7 @@ function autoWeekOffSunday(){return;}
 // updateStats() = top stat cards refresh
 // FUTURE: To add an employee edit option, add editEmp() next to delEmp()
 // ------------------------------------------------------------
-// STEP 6A: Store Lat/Lon helpers (the 50m geofence runs on this)
+// STEP 6A: Store Lat/Lon helpers (the 125m geofence runs on this)
 function parseLatLonFromLink(link){
   try{
     const s=String(link||'');
@@ -1382,13 +1399,13 @@ function handleSheetPhoto(input,empId){
 function handlePunchUpload(input){if(input)input.value='';return alert('❌ Gallery/upload Punch me allowed nahi hai!\nSirf Live Front Camera se photo lo 📷');}
 
 // ------------------------------------------------------------
-// JS STEP 8: LIVE LOCATION + 50m GEOFENCE (store range check)
-// GEO_MAX_M = 50 meter | distMeters() = haversine distance
+// JS STEP 8: LIVE LOCATION + 125m GEOFENCE (store range check)
+// GEO_MAX_M = 125 meter | distMeters() = haversine distance
 // checkGeofence() = locData vs getStoreCoords(curEmp) -> {ok, dist, store}
 // getLocation() = lat/lon/accuracy -> locData + locBox + store distance + in/out range badge
-// RULE: IN/OUT/StoreClose only within 50m, outside = BLOCK + Absent
+// RULE: IN/OUT/StoreClose only within 125m, outside = BLOCK + Absent
 // ------------------------------------------------------------
-const GEO_MAX_M=50;
+const GEO_MAX_M=125;
 function distMeters(lat1,lon1,lat2,lon2){
   try{
     const R=6371000, toR=x=>x*Math.PI/180;
@@ -1413,17 +1430,17 @@ let extra='';
 try{
   const g=checkGeofence();
   if(g.reason==='store-missing'){extra='<br>⚠️ Store location is not set — please contact Admin.';}
-  else if(g.dist>=0){extra='<br>🏬 Distance from Store: <b>'+g.dist+'m</b> '+(g.ok?'✅ <b style="color:#059669">In Range (50m)</b>':'❌ <b style="color:#dc2626">Out of Range (beyond 50m — punch BLOCKED, Absent)</b>');}
+  else if(g.dist>=0){extra='<br>🏬 Distance from Store: <b>'+g.dist+'m</b> '+(g.ok?'✅ <b style="color:#059669">In Range (125m)</b>':'❌ <b style="color:#dc2626">Out of Range (beyond 125m — punch BLOCKED, Absent)</b>');}
 }catch(e){}
 box.innerHTML=`✅ <b>Location captured</b><br>Lat: ${locData.lat}, Lon: ${locData.lon}<br>Accuracy: ±${locData.acc}m${extra}<br><a class="maplink" target="_blank" href="https://maps.google.com/?q=${locData.lat},${locData.lon}">🗺 View on Map</a><br>⏰ ${new Date().toLocaleString('en-IN')}`;},
 e=>{box.innerHTML='❌ Location Error: '+e.message+'<br>Please turn ON Location and press Allow.';},{enableHighAccuracy:true,timeout:15000});}
 
 // ------------------------------------------------------------
-// JS STEP 9: ATTENDANCE PUNCH — 4 STATUS + 50m GEOFENCE (NO admin holiday, NO back-date, NO Sunday auto)
-// 1️⃣ IN (On Arrival): photo+loc required + within 50m, 8AM–12PM (outside = BLOCK + Absent)
-// 2️⃣ OUT (On Departure): IN required + within 50m, until 11:59:50PM, <6PM = Half Day (outside = BLOCK + Absent)
+// JS STEP 9: ATTENDANCE PUNCH — 4 STATUS + 125m GEOFENCE (NO admin holiday, NO back-date, NO Sunday auto)
+// 1️⃣ IN (On Arrival): photo+loc required + within 125m, 8AM–12PM (outside = BLOCK + Absent)
+// 2️⃣ OUT (On Departure): IN required + within 125m, until 11:59:50PM, <6PM = Half Day (outside = BLOCK + Absent)
 // 3️⃣ WEEKOFF (Sunday Week Off, MANUAL on any day incl. Sunday — 3rd button), photo/loc NOT required
-// 4️⃣ STORECLOSE: marked by the employee (photo+loc required + within 50m) — 4th button
+// 4️⃣ STORECLOSE: marked by the employee (photo+loc required + within 125m) — 4th button
 // LOC: IN/OUT/StoreClose me lat/lon + Via Link + distM save | workHrs() = IN-OUT diff
 // ------------------------------------------------------------
 function punch(type){
@@ -1438,35 +1455,35 @@ if(type==='WEEKOFF'){
   setRec(recs);renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();
   return alert('🌴 Sunday Week Off marked ✅ (Manual, 3rd button)');
 }
-// ---- 4️⃣ STORE CLOSE (employee-side + 50m check, 4th button) ----
+// ---- 4️⃣ STORE CLOSE (employee-side + 125m check, 4th button) ----
 if(type==='STORECLOSE'){
   if(r) return alert('❌ Today\'s record already exists ('+getStatus(r).label+') — Store Close cannot be marked again.');
   if(!photoData) return alert('❌ First 📸 Take Photo → 👀 Preview → ✅ Submit Photo! (Store Close proof)');
   if(!locData) return alert('❌ Please capture 📍 location first! (Store Close proof)');
   const gf=checkGeofence();
   if(gf.reason==='store-missing') return alert('⚠️ Store location is not set by Admin! Please contact Admin.');
-  if(!gf.ok) return alert('⛔ You are outside the Store! Distance: '+gf.dist+'m (must be within 50m).\nStore Close BLOCKED — status Absent ❌\nGo near the Store and press Get Location again.');
+  if(!gf.ok) return alert('⛔ You are outside the Store! Distance: '+gf.dist+'m (must be within 125m).\nStore Close BLOCKED — status Absent ❌\nGo near the Store and press Get Location again.');
   const link=locLinkOf(locData.lat,locData.lon);
   recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'StoreClose',inTime:t,inPhoto:photoData,inLat:locData.lat,inLon:locData.lon,inLocLink:link,inDistM:gf.dist,outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:''});
   setRec(recs);photoData='';retake();renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();
   return alert('🏬 Store Close marked ✅ ('+gf.dist+'m)\n⏰ '+t+'\n📍 '+link);
 }
-// ---- 1️⃣ IN / 2️⃣ OUT (Duty + 50m check) ----
+// ---- 1️⃣ IN / 2️⃣ OUT (Duty + 125m check) ----
 if(!photoData) return alert('❌ First 📸 Take Photo → 👀 Preview → ✅ Submit Photo!');
 if(!locData) return alert('❌ Please capture 📍 location first!');
 const gfAll=checkGeofence();
 if(gfAll.reason==='store-missing') return alert('⚠️ Store location is not set by Admin! Please contact Admin.');
-if(!gfAll.ok) return alert('⛔ You are outside the Store! Distance: '+gfAll.dist+'m (must be within 50m).\nPunch IN/OUT BLOCKED — status Absent ❌\nGo near the Store and press 📍 Get Location again.');
+if(!gfAll.ok) return alert('⛔ You are outside the Store! Distance: '+gfAll.dist+'m (must be within 125m).\nPunch IN/OUT BLOCKED — status Absent ❌\nGo near the Store and press 📍 Get Location again.');
 const inLink=locLinkOf(locData.lat,locData.lon);
 if(type==='IN'){
 // STEP 9A: No back-date (today only) — no date picker, todayStr() is the key
-// STEP 9C: IN time window 8AM–12PM + 50m geofence
+// STEP 9C: IN time window 8AM–12PM + 125m geofence
 if(nowSec<IN_START_SEC||nowSec>IN_END_SEC) return alert('⛔ Check-IN is allowed only between 8:00 AM – 12:00 PM!\nCurrent time: '+t+'\n'+(nowSec<IN_START_SEC?'It is not 8 AM yet.':'The 12 PM window has passed.'));
 if(r) return alert(r.type&&r.type!=='Duty'?("Today's record already exists ("+getStatus(r).label+")"):("Today's IN is already done: "+r.inTime));
 recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'Duty',inTime:t,inPhoto:photoData,inLat:locData.lat,inLon:locData.lon,inLocLink:inLink,inDistM:gfAll.dist,outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:''});
 alert('✅ Attendance IN successful! ('+gfAll.dist+'m)\n⏰ '+t+'\n📍 '+inLink);}
 else{
-// STEP 9D: OUT — IN compulsory + 50m geofence + deadline 11:59:50 PM
+// STEP 9D: OUT — IN compulsory + 125m geofence + deadline 11:59:50 PM
 if(!r) return alert('❌ Please do IN first, then OUT (back-date OUT is not allowed)');
 if(recType(r)!=='Duty') return alert('❌ No Duty record for today ('+getStatus(r).label+') — OUT is not allowed.');
 if(r.outTime) return alert("Today's OUT is already done: "+r.outTime);
