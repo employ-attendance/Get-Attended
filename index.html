@@ -251,7 +251,6 @@ header{position:sticky}
 </div>
 
 <div id="empLogin">
-<div class="info">Employees, log in with your <b>ID and Password</b> (get your ID from Admin).<br>📱 <b>Android • iPhone (iOS) • Windows • Mac • Linux — sab pe chalega ✅</b><br>Same ID mobile + laptop dono pe login hogi (Admin se Backup lekar dusre device me Upload karo).</div>
 <div id="emptyDeviceNote" class="holiday-banner hidden" style="margin-top:10px"></div>
 <div id="storageWarn" class="holiday-banner hidden" style="margin-top:10px"></div>
 <label>Employee ID</label><input id="empId" placeholder="e.g.: EMP001" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
@@ -261,7 +260,6 @@ header{position:sticky}
 </div>
 
 <div id="admLogin" class="hidden">
-<div class="info">🔐 Admin login <b>har OS pe same</b> — Android, iOS, Windows, Mac, Linux ✅<br>Mobile keyboard se ID/password me <b>extra space ya Auto-Capital</b> ho to app khud handle karegi.</div>
 <!-- STEP 1B-i: Step 1 Admin ID -->
 <div id="admStep1" class="adm-step">
 <h4>1️⃣ Step 1: Admin ID</h4>
@@ -380,7 +378,6 @@ header{position:sticky}
 <div><label>Password * (preset: MAIPL@001)</label><input id="nPass" value="MAIPL@001" placeholder="MAIPL@001"><div class="hint">🔑 Default preset: <b>MAIPL@001</b> — change it here if needed.</div></div>
 <div><label>Designation</label><input id="nDesg" placeholder="e.g.: Helper, Driver"></div>
 <div><label>Mobile</label><input id="nMob" placeholder="Mobile number"></div>
-<div><label>📸 Employee Photo (Upload ✅ — data collect hogi)</label><input id="nPhoto" type="file" accept="image/*" onchange="handleProfilePhoto(this)"><div class="hint">Employee ki photo upload karo — ye Admin table + records me save hogi ✅</div><img id="profilePreview" alt="Profile preview"></div>
 <div><label>🏬 Store Name *</label><input id="nStore" placeholder="e.g.: Main Branch, Mumbai Store"></div>
 <div><label>🏙️ Store Area</label><input id="nStoreArea" placeholder="e.g.: Andheri West, Mumbai"><div class="hint">Area/locality of the Store (optional, shown in tables).</div></div>
 <div><label>🧭 Store Latitude * (e.g. 19.0760)</label><input id="nStoreLat" type="number" step="any" placeholder="e.g.: 19.0760"></div>
@@ -399,7 +396,7 @@ header{position:sticky}
 
 <div class="card">
 <h2>👥 All Employees</h2>
-<div class="info">📸 Employee ki <b>uploaded photo</b> yahi collect hoti hai — har row me photo dikhegi ✅</div>
+<div class="info">📸 Employee ki <b>photo yahi sheet me collect karo</b> — har row me <b>📸 Upload</b> se photo lagao ✅ (Create ID time photo nahi lagti)</div>
 <div class="table-wrap" style="overflow-x:auto"><table id="empTable"><thead><tr><th>📸 Photo</th><th>ID</th><th>Name</th><th>Password</th><th>Designation</th><th>Mobile</th><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Lat / Lon</th><th>📍 Store Location</th><th>Action</th></tr></thead><tbody></tbody></table></div>
 </div>
 
@@ -428,19 +425,20 @@ header{position:sticky}
 
 <div class="card">
 <h2>💾 Data Backup — Any Device Login Transfer</h2>
-<div class="info">📱 <b>Other device me login fix:</b> ye website ka data abhi <b>is device me saved</b> hai. Dusre mobile/laptop me chalane ke liye:<br>1️⃣ <b>⬇ Backup Download</b> dabao (JSON file milegi)<br>2️⃣ Dusre device pe website kholo → Admin login karo → yahi aakar <b>⬆ Backup Upload</b> se file select karo<br>3️⃣ Bas! Saare Employee ID + Attendance waha bhi login honge ✅<br><br>☁️ <b>Automatic cloud (Firebase) — optional:</b> agar roz auto-sync chahiye to neeche Firebase config lagao (ek baar setup, phir har device auto-sync). Bina cloud ke bhi Backup method se any-device login 100% chalega.</div>
-<div id="cloudStatus" class="loc-box">☁️ Cloud: <b>OFF</b> (This-device mode) — Backup file se transfer karo.</div>
+<div id="cloudStatus" class="loc-box">📱 <b>OFF</b> (This-device mode) — Backup file se transfer karo.</div>
+<div class="info" style="margin-top:10px">🥇 <b>Option 1 — OFF (This-device mode):</b> Backup file se transfer karo (Download → dusre device me Upload).</div>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
 <button class="btn btn-green btn-small" onclick="exportAllJSON()">⬇ Backup Download (All Data)</button>
 <label class="btn btn-blue btn-small" style="cursor:pointer;margin-top:4px">⬆ Backup Upload (Other Device)<input id="importFile" type="file" accept=".json,application/json" class="hidden" onchange="importAllJSON(this)"></label>
 <button class="btn btn-grey btn-small" onclick="copyTransferHelp()">📋 Copy Transfer Steps</button>
 </div>
 <div class="hint">Backup me Employees + Attendance + Admin + Profile/Uploaded Photos — sab kuch hota hai ✅</div>
-<label style="margin-top:12px">☁️ Firebase Config (optional auto-sync — paste & Save, blank = OFF)</label><input id="fbConfigInput" placeholder='{"apiKey":"...","projectId":"..."} or blank for OFF'>
+<div class="info" style="margin-top:12px">🥈 <b>Option 2 — Email Backup:</b> neeche Admin Email ID save karo, phir <b>📧 Email Backup</b> dabate hi backup usi Email pe bhejne ke liye Email app khulegi.</div>
+<label style="margin-top:8px">📧 Admin Email ID (Option 2 — backup isi Email pe jayega, blank = OFF)</label><input id="adminEmailInput" type="email" placeholder="e.g.: admin@gmail.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email">
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-<button class="btn btn-blue btn-small" onclick="saveFirebaseConfig()">☁️ Save Cloud Config</button>
-<button class="btn btn-grey btn-small" onclick="clearFirebaseConfig()">✖ Cloud OFF</button>
-<button class="btn btn-orange btn-small" onclick="syncNow()">🔄 Sync Now</button>
+<button class="btn btn-blue btn-small" onclick="saveAdminEmail()">📧 Save Email</button>
+<button class="btn btn-grey btn-small" onclick="clearAdminEmail()">✖ Email OFF</button>
+<button class="btn btn-orange btn-small" onclick="emailBackupNow()">📧 Email Backup</button>
 </div>
 </div>
 
@@ -572,116 +570,92 @@ header{position:sticky}
 // getEmp/setEmp, getRec/setRec = JSON read/write helpers
 // FUTURE: For new data (e.g. leaves/salary), add K_NEW + get/set here
 // ============================================================
-const K_EMP='get_attend_employees', K_REC='get_attend_records', K_ADMIN='get_attend_admin', K_FB='get_attend_fbconfig';
+const K_EMP='get_attend_employees', K_REC='get_attend_records', K_ADMIN='get_attend_admin', K_FB='get_attend_fbconfig', K_EMAIL='get_attend_admin_email';
 function safeGet(k,fb){try{const v=localStorage.getItem(k);if(v==null)return fb;return JSON.parse(v);}catch(e){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(fb));}catch(e2){return fb;}}}
 function safeSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){try{localStorage.removeItem(k);localStorage.setItem(k,JSON.stringify(v));}catch(e2){alert('⚠️ Storage full! Purani photos/records saaf karo ya Backup lekar Clear karo.');}}}
 const getEmp=()=>safeGet(K_EMP,[]);
 function setEmp(a){safeSet(K_EMP,a);queueCloudPush();}
 const getRec=()=>safeGet(K_REC,[]);
 function setRec(a){safeSet(K_REC,a);queueCloudPush();}
-// ---------- CLOUD SYNC LAYER (any-device login fix) ----------
-// WHY login failed on other device? Data was ONLY in this browser's localStorage.
-// FIX: (A) Backup file transfer (works NOW, no setup) + (B) Optional Firebase auto-sync.
-// Firebase setup (1-time, 5 min): firebase.google.com -> New Project -> Firestore -> Web App config paste below.
+// ---------- EMAIL BACKUP LAYER (2 options: OFF file-transfer + Email) ----------
+// Option 1 (OFF): Backup file Download -> dusre device me Upload (This-device mode)
+// Option 2 (Email): Admin Email ID save -> Email Backup button se backup usi Email pe bhejo
+// NOTE: Static single-file app bina server ke background me auto-mail nahi bhej sakti,
+// isliye Email Backup = backup file ready + Email app compose (mobile pe direct share, PC pe mailto + download).
 let cloudPushTimer=null;
-function getFbConfig(){try{return JSON.parse(localStorage.getItem(K_FB)||'null');}catch(e){return null;}}
-function isCloudOn(){const c=getFbConfig();return !!(c&&c.projectId);}
-function queueCloudPush(){if(!isCloudOn()){updateSyncBadge();return;}clearTimeout(cloudPushTimer);cloudPushTimer=setTimeout(syncNow,1500);}
-async function ensureFirebase(){
-  const cfg=getFbConfig();
-  if(!cfg) return null;
-  try{
-    if(!window.firebase){await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');}
-    if(!firebase.apps.length)firebase.initializeApp(cfg);
-    return firebase.firestore();
-  }catch(e){console.warn('Firebase load fail',e);return null;}
-}
+function getAdminEmail(){try{return (localStorage.getItem(K_EMAIL)||'').trim();}catch(e){return '';}}
+function isEmailValid(em){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(em||'').trim());}
+function isEmailOn(){return isEmailValid(getAdminEmail());}
+// Backward-compat aliases (old Firebase names — kahin crash na ho)
+function getFbConfig(){return null;}
+function isCloudOn(){return isEmailOn();}
+async function ensureFirebase(){return null;}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-async function syncNow(){
-  if(!isCloudOn()){updateSyncBadge();return alert('☁️ Cloud OFF hai. Backup file se transfer karo, ya Firebase config save karo.');}
-  const box=document.getElementById('cloudStatus');
-  try{
-    if(box)box.innerHTML='⏳ Syncing...';
-    const db=await ensureFirebase();
-    if(!db){if(box)box.innerHTML='❌ Cloud connect fail — internet/config check karo.';return;}
-    const cfg=getFbConfig();
-    const appId=(cfg.appId||'get-attended-default');
-    const docRef=db.collection('attendance_apps').doc(appId);
-    // Push local -> cloud (merge, latest wins by updatedAt)
-    const payload={emp:getEmp(),rec:getRec(),admin:getAdmin(),updatedAt:Date.now()};
-    const remote=await docRef.get();
-    if(remote.exists){
-      const r=remote.data();
-      // Merge: union by id/date to avoid overwriting other device data
-      const mergedEmp=mergeEmp(r.emp||[],payload.emp);
-      const mergedRec=mergeRec(r.rec||[],payload.rec);
-      const mergedAdmin=(r.updatedAt||0)>(payload.updatedAt||0)?r.admin:payload.admin;
-      await docRef.set({emp:mergedEmp,rec:mergedRec,admin:mergedAdmin,updatedAt:Date.now()});
-      safeSet(K_EMP,mergedEmp);safeSet(K_REC,mergedRec);
-      try{localStorage.setItem(K_ADMIN,JSON.stringify(mergedAdmin));}catch(e){}
-    }else{
-      await docRef.set(payload);
-    }
-    renderAdminInfo();
-    if(typeof renderEmpTable==='function'&&!document.getElementById('admDash').classList.contains('hidden')){try{renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();}catch(e){}}
-    if(box)box.innerHTML='✅ Cloud sync done: <b>'+getEmp().length+'</b> employees, <b>'+getRec().length+'</b> records. Ab kisi bhi device se login hoga ✅';
-    updateSyncBadge();
-    alert('✅ Cloud sync successful! Dusre device pe same Firebase config + Sync Now dabao.');
-  }catch(e){console.warn(e);if(box)box.innerHTML='❌ Sync fail: '+e.message;alert('❌ Sync fail: '+e.message);}
-}
-function mergeEmp(a,b){const m={};a.concat(b).forEach(e=>{if(e&&e.id)m[e.id.toLowerCase()]=e;});return Object.values(m);}
-function mergeRec(a,b){const m={};a.concat(b).forEach(r=>{if(r&&r.empId&&r.date)m[r.empId.toLowerCase()+'|'+r.date]=r;});return Object.values(m).sort((x,y)=>(x.date+x.empId).localeCompare(y.date+y.empId));}
-async function cloudPullOnStart(){
-  if(!isCloudOn()){updateSyncBadge();showEmptyDeviceNote();return;}
-  try{
-    const db=await ensureFirebase();
-    if(!db){updateSyncBadge();return;}
-    const cfg=getFbConfig();
-    const docRef=db.collection('attendance_apps').doc(cfg.appId||'get-attended-default');
-    const snap=await docRef.get();
-    if(snap.exists){
-      const r=snap.data();
-      if(r.emp&&r.emp.length)safeSet(K_EMP,mergeEmp(getEmp(),r.emp));
-      if(r.rec&&r.rec.length)safeSet(K_REC,mergeRec(getRec(),r.rec));
-      if(r.admin&&r.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(r.admin));}catch(e){}}
-      renderAdminInfo();
-    }
-  }catch(e){console.warn('cloud pull fail',e);}
-  updateSyncBadge();showEmptyDeviceNote();
-}
+function queueCloudPush(){try{updateSyncBadge();}catch(e){}return;}
+async function syncNow(){return emailBackupNow();}
+function saveFirebaseConfig(){return saveAdminEmail();}
+function clearFirebaseConfig(){return clearAdminEmail();}
+async function cloudPullOnStart(){try{updateSyncBadge();}catch(e){}try{showEmptyDeviceNote();}catch(e){}return;}
 function updateSyncBadge(){
-  const el=document.getElementById('syncBadge');if(!el)return;
-  if(isCloudOn()){el.textContent='☁️ Cloud ON';el.className='sync-badge cloud';}
-  else{el.textContent='📱 This device only';el.className='sync-badge off';}
+  const em=getAdminEmail();
+  const on=isEmailOn();
+  const el=document.getElementById('syncBadge');if(el){
+    if(on){el.textContent='📧 Email: '+em;el.className='sync-badge cloud';}
+    else{el.textContent='📱 This device only';el.className='sync-badge off';}
+  }
   const box=document.getElementById('cloudStatus');
-  if(box&&!isCloudOn())box.innerHTML='☁️ Cloud: <b>OFF</b> (This-device mode) — Backup file se transfer karo. Employees: <b>'+getEmp().length+'</b>, Records: <b>'+getRec().length+'</b>';
-  const fb=document.getElementById('fbConfigInput');if(fb&&!fb.value){try{const c=getFbConfig();if(c)fb.value=JSON.stringify(c);}catch(e){}}
+  if(box){
+    if(on)box.innerHTML='📧 Email Backup: <b>ON</b> ('+em+') — Employees: <b>'+getEmp().length+'</b>, Records: <b>'+getRec().length+'</b>';
+    else box.innerHTML='📱 <b>OFF</b> (This-device mode) — Backup file se transfer karo. Employees: <b>'+getEmp().length+'</b>, Records: <b>'+getRec().length+'</b>';
+  }
+  const inp=document.getElementById('adminEmailInput');if(inp&&!inp.value&&em)inp.value=em;
 }
 function showEmptyDeviceNote(){
   const n=document.getElementById('emptyDeviceNote');if(!n)return;
-  const emps=getEmp();
-  if(!emps.length){
-    n.classList.remove('hidden');
-    n.innerHTML='📱 <b>Is device pe koi Employee ID nahi mila.</b><br>Admin ne dusre device pe ID banayi hai? To Admin se <b>Backup file</b> lekar Admin panel se Upload karo — ya ☁️ Cloud ON karo. Default Admin: <b>admin / Admin@124</b>';
-  }else{n.classList.add('hidden');}
+  n.classList.add('hidden');n.innerHTML='';
 }
-function saveFirebaseConfig(){
-  const v=document.getElementById('fbConfigInput').value.trim();
-  if(!v){return alert('Paste Firebase web config JSON first (ya Cloud OFF rakho).');}
+function saveAdminEmail(){
+  const inp=document.getElementById('adminEmailInput');
+  const v=String((inp?inp.value:'')||'').trim();
+  if(!isEmailValid(v)) return alert('❌ Sahi Email ID likho (e.g.: admin@gmail.com)');
+  try{localStorage.setItem(K_EMAIL,v);}catch(e){}
+  updateSyncBadge();
+  alert('✅ Email saved: '+v+'\nAb 📧 Email Backup dabate hi backup isi Email pe jayega.');
+}
+function clearAdminEmail(){try{localStorage.removeItem(K_EMAIL);}catch(e){}const inp=document.getElementById('adminEmailInput');if(inp)inp.value='';updateSyncBadge();alert('📱 Email OFF — ab Option 1 (This-device mode + Backup file transfer).');}
+function buildBackupObject(){return {app:'Get-Attendend',exportedAt:new Date().toISOString(),emp:getEmp(),rec:getRec(),admin:getAdmin(),adminEmail:getAdminEmail()};}
+async function emailBackupNow(){
+  const email=getAdminEmail();
+  if(!isEmailValid(email)){updateSyncBadge();return alert('❌ Pehle Option 2 me Admin Email ID Save karo.');}
+  const data=buildBackupObject();
+  const json=JSON.stringify(data);
+  const fname='attendance-backup-'+todayStr()+'.json';
+  const subject='Attendance Backup '+todayStr()+' ('+data.emp.length+' emp, '+data.rec.length+' records)';
+  const summary='Get-Attendend Backup\nDate: '+data.exportedAt+'\nEmployees: '+data.emp.length+'\nRecords: '+data.rec.length+'\n\nBackup file attach karke is mail ko send karo. Dusre device me file download karke Admin panel -> Backup Upload se restore hoga.';
   try{
-    let cfg=JSON.parse(v);
-    if(cfg.firebase)cfg=cfg.firebase;
-    if(!cfg.projectId||!cfg.apiKey) return alert('❌ Config me projectId + apiKey chahiye!');
-    if(!cfg.appId)cfg.appId='get-attended-default';
-    localStorage.setItem(K_FB,JSON.stringify(cfg));
-    updateSyncBadge();
-    alert('✅ Cloud config saved! Ab Sync Now dabao.');
-    syncNow();
-  }catch(e){alert('❌ Invalid JSON! Firebase web config paste karo.');}
+    if(window.navigator&&navigator.canShare){
+      const file=new File([json],fname,{type:'application/json'});
+      try{
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:subject,text:summary});
+          updateSyncBadge();
+          return;
+        }
+      }catch(e){if(e&&e.name==='AbortError')return;}
+    }
+  }catch(e){}
+  try{
+    const blob=new Blob([json],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();
+  }catch(e){}
+  try{window.location.href='mailto:'+encodeURIComponent(email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(summary+'\n\n(Backup file download ho gayi hai — usey attach karke send karo.)');}catch(e){}
+  updateSyncBadge();
+  alert('📧 Email app khul rahi hai ('+email+')\nBackup file download bhi ho gayi — usey attach karke send karo ✅');
 }
-function clearFirebaseConfig(){localStorage.removeItem(K_FB);updateSyncBadge();alert('☁️ Cloud OFF — ab This-device mode + Backup transfer.');}
+function mergeEmp(a,b){const m={};a.concat(b).forEach(e=>{if(e&&e.id)m[e.id.toLowerCase()]=e;});return Object.values(m);}
+function mergeRec(a,b){const m={};a.concat(b).forEach(r=>{if(r&&r.empId&&r.date)m[r.empId.toLowerCase()+'|'+r.date]=r;});return Object.values(m).sort((x,y)=>(x.date+x.empId).localeCompare(y.date+y.empId));}
 function exportAllJSON(){
-  const data={app:'Get-Attendend',exportedAt:new Date().toISOString(),emp:getEmp(),rec:getRec(),admin:getAdmin()};
+  const data=buildBackupObject();
   const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='attendance-backup-'+todayStr()+'.json';a.click();
   alert('✅ Backup downloaded! Dusre device pe Admin login → Backup Upload karo.');
@@ -699,7 +673,8 @@ function importAllJSON(input){
       const mergedRec=mergeRec(getRec(),rec);
       safeSet(K_EMP,mergedEmp);safeSet(K_REC,mergedRec);
       if(d.admin&&d.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(d.admin));renderAdminInfo();}catch(e){}}
-      renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();showEmptyDeviceNote();queueCloudPush();
+      if(d.adminEmail&&isEmailValid(d.adminEmail)){try{localStorage.setItem(K_EMAIL,String(d.adminEmail).trim());}catch(e){}}
+      renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();showEmptyDeviceNote();queueCloudPush();updateSyncBadge();
       alert('✅ Backup imported! Employees: '+mergedEmp.length+', Records: '+mergedRec.length+'\nAb any-device login chalega ✅');
     }catch(e){alert('❌ Invalid backup file!');}
     input.value='';
@@ -988,12 +963,12 @@ const rawId=document.getElementById('empId').value, rawP=document.getElementById
 const id=normId(rawId), p=String(rawP||'').trim();
 if(!id||!p) return alert('Please enter ID and Password');
 const all=getEmp();
-if(!all.length) return alert('📱 Is device pe koi Employee ID nahi hai!\n(Android/iPhone/PC — kisi pe bhi yehi dikhega jab tak data transfer na ho)\n\nFIX:\n1. Admin se Backup file lekar Admin panel me Upload karo, OR\n2. Cloud ON karo + Sync Now\n\nPhir same ID se any-device login hoga ✅\n(Default Admin: admin / Admin@124)');
+if(!all.length) return alert('❌ Wrong ID or Password!');
 const f=all.find(x=>normId(x.id).toLowerCase()===id.toLowerCase()&&String(x.pass)===p);
 if(!f){
   const idExists=all.some(x=>normId(x.id).toLowerCase()===id.toLowerCase());
-  if(idExists) return alert('❌ Wrong Password! (Mobile pe Auto-Capital/space check karo)\nForgot link se reset karo ya Admin se pucho.');
-  return alert('❌ Wrong ID or Password!\n(Is device pe ye ID nahi mili. Admin ne dusre device pe banayi hai to Backup Upload / Cloud Sync karo, phir login karo.)');
+  if(idExists) return alert('❌ Wrong Password!');
+  return alert('❌ Wrong ID or Password!');
 }
 curEmp=f;saveSession({role:'emp',empId:f.id,loginAt:Date.now()});showDash('emp');startSesTimers();
 if(needsPassChange(f)){openFirstLoginModal();}}
@@ -1025,7 +1000,7 @@ const p=String(document.getElementById('admPass').value||'').trim();
 if(!p) return alert('Please enter Admin Password (Step 3)');
 const ad=getAdmin();
 if(normId(admIdOk).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass){saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
-else alert('❌ Wrong Admin Password! (Mobile pe Auto-Capital/space check karo)\n(No hint is shown for security. Please reset via the Forgot link.)');}
+else alert('❌ Wrong Admin Password!');}
 function showDash(w){
 document.getElementById('loginSection').classList.add('hidden');
 document.getElementById('logoutBtn').classList.remove('hidden');
@@ -1206,7 +1181,6 @@ const n=document.getElementById('nName').value.trim(), id=document.getElementByI
 p=document.getElementById('nPass').value.trim(), d=document.getElementById('nDesg').value.trim(), m=document.getElementById('nMob').value.trim(),
 st=document.getElementById('nStore').value.trim(),
 stArea=document.getElementById('nStoreArea').value.trim();
-const profPhoto=tempProfilePhoto||'';
 let sLat=document.getElementById('nStoreLat').value.trim(), sLon=document.getElementById('nStoreLon').value.trim();
 let stLink=document.getElementById('nStoreLink').value.trim();
 if(!n||!id||!p) return alert('Name, ID and Password are required (Admin sets the ID manually)');
@@ -1221,10 +1195,9 @@ if(isNaN(lo)||lo<-180||lo>180) return alert('❌ Store Longitude must be between
 if(!stLink){stLink=buildStoreLink(la,lo);document.getElementById('nStoreLink').value=stLink;}
 const arr=getEmp();
 if(arr.some(x=>x.id.toLowerCase()===id.toLowerCase())){return alert('❌ This ID "'+id+'" already exists! Please type a different unique ID manually. (Use ↻ Suggest for an idea)');}
-arr.push({name:n,id,pass:p,desg:d,mob:m,photo:profPhoto,store:st,storeArea:stArea,storeLat:la,storeLon:lo,storeLink:stLink,created:todayStr(),mustChangePass:true});setEmp(arr);
-alert('✅ ID created (Manual ID)!'+(profPhoto?' 📸 Photo saved ✅':'')+'\nShare with Employee:\nID: '+id+'\nPassword: '+p+' (preset MAIPL@001 — change on first login is compulsory)\nStore: '+st+(stArea?' ('+stArea+')':'')+'\nLat/Lon: '+la+', '+lo);
+arr.push({name:n,id,pass:p,desg:d,mob:m,photo:'',store:st,storeArea:stArea,storeLat:la,storeLon:lo,storeLink:stLink,created:todayStr(),mustChangePass:true});setEmp(arr);
+alert('✅ ID created (Manual ID)!\nShare with Employee:\nID: '+id+'\nPassword: '+p+' (preset MAIPL@001 — change on first login is compulsory)\nStore: '+st+(stArea?' ('+stArea+')':'')+'\nLat/Lon: '+la+', '+lo+'\n📸 Photo ab All Employees sheet me Upload karo.');
 ['nName','nId','nDesg','nMob','nStore','nStoreArea','nStoreLat','nStoreLon','nStoreLink'].forEach(i=>document.getElementById(i).value='');
-tempProfilePhoto='';const npf=document.getElementById('nPhoto');if(npf)npf.value='';const ppv=document.getElementById('profilePreview');if(ppv){ppv.src='';ppv.style.display='none';}
 document.getElementById('nPass').value=DEFAULT_EMP_PASS;
 renderEmpTable();renderStoreAreas();updateStats();}
 // delEmp = PERMANENT delete: the ID is removed everywhere (All Employees, Store Areas, filters, stats)
@@ -1232,7 +1205,7 @@ renderEmpTable();renderStoreAreas();updateStats();}
 function delEmp(id){if(!confirm('Delete Employee '+id+' permanently?\n(The ID will be removed everywhere — old attendance rows will remain ONLY in the records table)'))return;setEmp(getEmp().filter(x=>x.id!==id));const fe=document.getElementById('fEmp');if(fe&&fe.value===id)fe.value='';renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();}
 function renderEmpTable(){
 const tb=document.querySelector('#empTable tbody');tb.innerHTML='';
-getEmp().forEach(e=>{const sName=e.store||'-';const sArea=e.storeArea||'-';const sLink=e.storeLink?`<a class="maplink" target="_blank" href="${e.storeLink}">🗺 Open Link</a>`:'-';const c=getStoreCoords(e);const latLon=c?(c.lat+',<br>'+c.lon):'-';const prof=e.photo?`<img src="${e.photo}" onclick="zoomSrc(this)" title="Uploaded profile photo">`:'<span style="color:#94a3b8">—</span>';tb.innerHTML+=`<tr><td>${prof}</td><td><b>${e.id}</b></td><td>${e.name}</td><td>${e.pass}</td><td>${e.desg||'-'}</td><td>${e.mob||'-'}</td><td><b>${sName}</b></td><td>${sArea}</td><td style="font-size:12px">${latLon}</td><td>${sLink}</td><td><button class="btn btn-red btn-small" onclick="delEmp('${e.id}')">Delete</button></td></tr>`;});
+getEmp().forEach(e=>{const sName=e.store||'-';const sArea=e.storeArea||'-';const sLink=e.storeLink?`<a class="maplink" target="_blank" href="${e.storeLink}">🗺 Open Link</a>`:'-';const c=getStoreCoords(e);const latLon=c?(c.lat+',<br>'+c.lon):'-';const prof=e.photo?`<img src="${e.photo}" onclick="zoomSrc(this)" title="Sheet se collect ki hui photo">`:'<span style="color:#94a3b8">—</span>';const upBtn=`<br><label class="btn btn-blue btn-small" style="margin-top:6px;cursor:pointer">📸 Upload<input type="file" accept="image/*" class="hidden" onchange="handleSheetPhoto(this,'${e.id}')"> </label>`;tb.innerHTML+=`<tr><td>${prof}${upBtn}</td><td><b>${e.id}</b></td><td>${e.name}</td><td>${e.pass}</td><td>${e.desg||'-'}</td><td>${e.mob||'-'}</td><td><b>${sName}</b></td><td>${sArea}</td><td style="font-size:12px">${latLon}</td><td>${sLink}</td><td><button class="btn btn-red btn-small" onclick="delEmp('${e.id}')">Delete</button></td></tr>`;});
 const f=document.getElementById('fEmp');const cur=f.value;
 f.innerHTML='<option value="">All Employees</option>'+getEmp().map(e=>`<option value="${e.id}">${e.id} - ${e.name}</option>`).join('');f.value=cur;}
 // STEP 6B: Store Areas section — auto-grouped from employee Stores (Name + Lat/Lon + Link + count)
@@ -1304,7 +1277,7 @@ function showStatList(type){
 // RULE: Punch IN/OUT/StoreClose me sirf front (selfie) camera allowed — gallery/upload ❌ Not Allowed.
 // startCam() = FRONT camera on | capturePhoto() = preview only | submitPhoto() = confirm
 // RULE: No punch without Submit (photoData stays empty)
-// NOTE: Employee profile photo (Admin side nPhoto upload) alag se collect hoti hai ✅ — wo punch gallery nahi hai.
+// NOTE: Employee profile photo All Employees sheet me Upload se collect hoti hai ✅ — wo punch gallery nahi hai.
 // NOTE: HTTPS/localhost + camera permission required
 // ------------------------------------------------------------
 async function startCam(silent){
@@ -1345,9 +1318,8 @@ const sb=document.getElementById('submitPhotoBtn');if(sb)sb.classList.add('hidde
 const st=document.getElementById('photoStatus');if(st)st.innerHTML='✅ <b>Photo submitted!</b> Now you can Punch (IN / OUT / Store Close).';
 alert('✅ Photo submitted! Now please Punch.');}
 function retake(){photoData='';pendingPhoto='';document.getElementById('previewImg').classList.add('hidden');document.getElementById('cam').classList.remove('hidden');const sb=document.getElementById('submitPhotoBtn');if(sb)sb.classList.add('hidden');const st=document.getElementById('photoStatus');if(st)st.innerHTML='📷 Front camera only — Gallery/upload is not allowed ❌<br>Step 1: Start Camera → Step 2: Take Photo (preview) → Step 3: Submit ✅';}
-// ---------- PHOTO UPLOAD DATA COLLECTION (camera + gallery both saved) ----------
+// ---------- PHOTO COLLECT IN SHEET (All Employees sheet me Upload, Create time pe nahi) ----------
 // compressImage(file|dataURL, maxDim=800, quality=0.7) -> small base64 (localStorage + cloud safe)
-let tempProfilePhoto='';
 function compressImage(src,cb,maxDim,quality){
   maxDim=maxDim||800;quality=quality||0.7;
   const img=new Image();
@@ -1365,14 +1337,17 @@ function compressImage(src,cb,maxDim,quality){
   if(typeof src==='string')img.src=src;
   else{const rd=new FileReader();rd.onload=()=>{img.src=rd.result;};rd.readAsDataURL(src);}
 }
-function handleProfilePhoto(input){
+function handleSheetPhoto(input,empId){
   const f=input.files&&input.files[0];if(!f)return;
   compressImage(f,(small)=>{
-    tempProfilePhoto=small;
-    const pv=document.getElementById('profilePreview');
-    if(pv){pv.src=small;pv.style.display='block';}
-    alert('✅ Profile photo ready! Create ID dabate hi save hogi.');
+    const arr=getEmp();
+    const idx=arr.findIndex(x=>String(x.id).toLowerCase()===String(empId).toLowerCase());
+    if(idx<0){input.value='';return alert('❌ Employee not found!');}
+    arr[idx].photo=small;setEmp(arr);
+    renderEmpTable();renderAdminTable();
+    alert('✅ Photo sheet me collect ho gayi! ID: '+arr[idx].id);
   },600,0.65);
+  input.value='';
 }
 function handlePunchUpload(input){if(input)input.value='';return alert('❌ Gallery/upload Punch me allowed nahi hai!\nSirf Live Front Camera se photo lo 📷');}
 
