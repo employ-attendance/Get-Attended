@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Get-Attendend</title>
 <link rel="icon" type="image/png" href="Logo/LOGO.png">
 <link rel="apple-touch-icon" href="Logo/LOGO.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1a56db">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Get-Attendend Employee Attendance - works on Android, iOS, Windows, Mac, Linux">
 <!-- ============================================================
   PROJECT: Get-Attendend - Employee Attendance System
   STACK: Single-file HTML + CSS + JS + localStorage
@@ -56,8 +62,9 @@ input:focus,select:focus{border-color:#1a56db}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,3vw,16px)}
 video,#previewImg{width:100%;max-width:100%;height:auto;aspect-ratio:4/3;max-height:300px;border-radius:10px;background:#000;object-fit:cover;display:block}
 .loc-box{background:#f1f5f9;border-radius:10px;padding:clamp(10px,2.5vw,12px);font-size:clamp(12px,3vw,14px);margin-top:10px;word-break:break-word;overflow-wrap:anywhere;line-height:1.5;width:100%}
-.card div[style*="overflow-x"],div[style*="overflow-x:auto"]{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-left:calc(-1 * clamp(14px,3.5vw,24px));margin-right:calc(-1 * clamp(14px,3.5vw,24px));padding-left:clamp(14px,3.5vw,24px);padding-right:clamp(14px,3.5vw,24px)}
-table{width:100%;min-width:640px;border-collapse:collapse;margin-top:12px;font-size:clamp(11px,2.8vw,13px)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;width:100%;display:block;border-radius:8px;margin-top:12px}
+.card div[style*="overflow-x"]{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+table{width:100%;min-width:640px;border-collapse:collapse;margin-top:0;font-size:clamp(11px,2.8vw,13px)}
 th,td{border:1px solid #cbd5e1;padding:clamp(6px,1.5vw,8px);text-align:center;white-space:nowrap}
 th{background:#1a56db;color:#fff;font-size:clamp(11px,2.8vw,13px);position:sticky;top:0}
 tr:nth-child(even){background:#f8fafc}
@@ -162,6 +169,65 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
   video,#previewImg{max-height:200px;aspect-ratio:16/9}
   header{position:static}
 }
+/* ---------- CSS STEP 7: Anti-overlap fixes (mobile Employee + Admin interface) ---------- */
+/* Root cause of overlap: flex items without min-width:0, tables wider than card, long links */
+/* These rules guarantee NO overlap on any screen: 320px phones -> 4K desktop */
+.card,.modal-box,.adm-step,.live-clock,.loc-box,.rule-box,.info,.holiday-banner{min-width:0;overflow-wrap:anywhere}
+.card h2,.card h3,.topbar h2{overflow-wrap:anywhere;word-break:break-word}
+.topbar{gap:10px}
+.topbar .btn{flex-shrink:0}
+.grid2>div{min-width:0;overflow:hidden}
+.filters{min-width:0}
+.filters input,.filters select{max-width:100%}
+.btn,.btn-small{overflow-wrap:anywhere;hyphens:auto}
+.stat-cards{min-width:0}
+.stat{min-width:0;overflow:hidden;overflow-wrap:anywhere}
+.stat h2{word-break:break-all}
+.table-wrap table{min-width:600px}
+.table-wrap th,.table-wrap td{white-space:nowrap}
+a.maplink{display:inline-block;max-width:100%}
+video,#previewImg{object-fit:cover;width:100%}
+#cam{background:#111}
+/* Punch buttons: always stack cleanly, never overlap side-by-side on narrow screens */
+#empDash .btn{margin-top:10px}
+.punch-stack{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.punch-stack .btn{margin-top:0;width:100%}
+/* Upload + profile photo UI */
+.upload-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.upload-row input[type=file]{border:2px dashed #94a3b8;background:#f8fafc;padding:10px;border-radius:9px;font-size:14px}
+#profilePreview,#punchUploadPreview{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #1a56db;display:none;margin-top:8px}
+.sync-badge{font-size:11px;background:#0f766e;color:#fff;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.sync-badge.off{background:#64748b}
+.sync-badge.cloud{background:#059669}
+/* Extra safety: very narrow screens */
+@media(max-width:480px){
+  .container{padding:0 8px;overflow-x:hidden}
+  .card{padding:14px 12px;overflow-x:hidden}
+  .table-wrap{margin-left:-4px;margin-right:-4px;padding-left:4px;padding-right:4px}
+  .topbar h2{font-size:16px}
+  header{padding:10px 12px}
+  header h1{font-size:18px}
+  .punch-stack .btn{font-size:15px;padding:12px 10px}
+  .stat-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modal{padding:8px}
+  .modal-box{width:100%;padding:16px 14px}
+  input,select{font-size:16px}
+}
+/* ---------- CSS STEP 8: Universal touch + OS support (Android/iOS/Win/Mac/Linux) ---------- */
+/* iOS Safari + Android Chrome dono pe tap/zoom/overlap issues fix */
+button,.btn,.tabs button,.forgot-link,.human-check{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn,.tabs button{user-select:none;-webkit-user-select:none;cursor:pointer}
+input,select,textarea{max-width:100%}
+input[type=checkbox]{min-width:22px;min-height:22px}
+/* iOS zoom prevent + autofill fix */
+input{border-radius:9px}
+input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #fff inset}
+/* Prevent sticky header covering login buttons on small screens */
+header{position:sticky}
+#loginSection{position:relative;z-index:1}
+/* Large tap targets for touch (Apple HIG 44px) */
+.tabs button,.btn{min-height:44px}
+.human-check{min-height:48px}
 </style>
 </head>
 <body>
@@ -169,7 +235,7 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <header>
 <img src="Logo/LOGO.png" alt="Logo" onerror="this.src='https://via.placeholder.com/52'">
 <div><h1>Get-Attendend</h1><p>Employee Attendance System • Photo + Location + Live Time</p></div>
-<div class="right"><span id="hdrUser"></span><span id="sesLeft" style="font-size:12px;opacity:.9"></span><button id="logoutBtn" class="btn-grey btn btn-small hidden" onclick="logout()">Logout</button></div>
+<div class="right"><span id="syncBadge" class="sync-badge off" title="Data sync status">📱 This device only</span><span id="hdrUser"></span><span id="sesLeft" style="font-size:12px;opacity:.9"></span><button id="logoutBtn" class="btn-grey btn btn-small hidden" onclick="logout()">Logout</button></div>
 </header>
 
 <div class="container">
@@ -185,38 +251,41 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 </div>
 
 <div id="empLogin">
-<div class="info">Employees, log in with your <b>ID and Password</b> (get your ID from Admin).</div>
-<label>Employee ID</label><input id="empId" placeholder="e.g.: EMP001">
-<label>Password</label><input id="empPass" type="password" placeholder="Password">
-<button class="btn btn-green" onclick="employeeLogin()">✅ Login / Mark Attendance</button>
-<div style="text-align:center"><button class="forgot-link" onclick="openEmpForgotModal()">Forgot Password? Reset via Mobile 📱</button></div>
+<div class="info">Employees, log in with your <b>ID and Password</b> (get your ID from Admin).<br>📱 <b>Android • iPhone (iOS) • Windows • Mac • Linux — sab pe chalega ✅</b><br>Same ID mobile + laptop dono pe login hogi (Admin se Backup lekar dusre device me Upload karo).</div>
+<div id="emptyDeviceNote" class="holiday-banner hidden" style="margin-top:10px"></div>
+<div id="storageWarn" class="holiday-banner hidden" style="margin-top:10px"></div>
+<label>Employee ID</label><input id="empId" placeholder="e.g.: EMP001" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
+<label>Password</label><input id="empPass" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+<button class="btn btn-green" type="button" onclick="employeeLogin()">✅ Login / Mark Attendance</button>
+<div style="text-align:center"><button class="forgot-link" type="button" onclick="openEmpForgotModal()">Forgot Password? Reset via Mobile 📱</button></div>
 </div>
 
 <div id="admLogin" class="hidden">
+<div class="info">🔐 Admin login <b>har OS pe same</b> — Android, iOS, Windows, Mac, Linux ✅<br>Mobile keyboard se ID/password me <b>extra space ya Auto-Capital</b> ho to app khud handle karegi.</div>
 <!-- STEP 1B-i: Step 1 Admin ID -->
 <div id="admStep1" class="adm-step">
 <h4>1️⃣ Step 1: Admin ID</h4>
-<label>Admin ID</label><input id="admId" placeholder="admin">
-<button class="btn btn-blue" onclick="admNextToHuman()">Next ➡ Human Verification</button>
+<label>Admin ID</label><input id="admId" placeholder="admin" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
+<button class="btn btn-blue" type="button" onclick="admNextToHuman()">Next ➡ Human Verification</button>
 </div>
 <!-- STEP 1B-ii: Step 2 Human verification (captcha + checkbox) -->
 <div id="admStep2" class="adm-step hidden">
 <h4>2️⃣ Step 2: Human Verification 🤖➡🧍</h4>
 <p style="font-size:13px;color:#475569">ID <b id="admVerIdShow"></b> verified. Please prove you are human:</p>
 <div class="captcha-box" id="captchaQ">3 + 4 = ?</div>
-<label>Captcha Answer * (enter the sum shown above)</label><input id="captchaAns" type="number" placeholder="e.g.: 7">
+<label>Captcha Answer * (enter the sum shown above)</label><input id="captchaAns" type="number" inputmode="numeric" placeholder="e.g.: 7" enterkeyhint="next">
 <label class="human-check"><input type="checkbox" id="humanChk"> ✅ I am human (not a robot)</label>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
-<button class="btn btn-grey" style="flex:1 1 100px;min-width:100px" onclick="admBackToId()">⬅ Back</button>
-<button class="btn btn-blue" style="flex:2 1 160px;min-width:160px" onclick="admVerifyHuman()">Verify & Continue ➡</button>
+<button class="btn btn-grey" type="button" style="flex:1 1 100px;min-width:100px" onclick="admBackToId()">⬅ Back</button>
+<button class="btn btn-blue" type="button" style="flex:2 1 160px;min-width:160px" onclick="admVerifyHuman()">Verify & Continue ➡</button>
 </div>
-<div style="text-align:center;margin-top:8px"><button class="forgot-link" style="font-size:12px" onclick="refreshCaptcha()">🔄 New Captcha</button></div>
+<div style="text-align:center;margin-top:8px"><button class="forgot-link" type="button" style="font-size:12px" onclick="refreshCaptcha()">🔄 New Captcha</button></div>
 </div>
 <!-- STEP 1B-iv: Step 3 Password + Forgot (DIRECT after Verify & Continue, reset link ONLY here) -->
 <div id="admStep4" class="adm-step hidden">
 <h4>3️⃣ Step 3: Input Password</h4>
-<label>Password</label><input id="admPass" type="password" placeholder="Admin password">
-<button class="btn btn-blue" onclick="adminLogin()">🔓 Admin Login</button>
+<label>Password</label><input id="admPass" type="password" placeholder="Admin password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+<button class="btn btn-blue" type="button" onclick="adminLogin()">🔓 Admin Login</button>
 <div style="text-align:center"><button class="forgot-link" onclick="openForgotModal()">Forgot Password? Reset via Security Questions 📱</button></div>
 <div style="text-align:center;margin-top:6px"><button class="forgot-link" style="font-size:12px;color:#64748b" onclick="admBackToId2()">⬅ Back</button></div>
 </div>
@@ -228,8 +297,8 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <!-- STEP 2B: Profile header (empName/empShowId/empDesg/empStore/empStoreLink) -->
 <!-- STEP 2C: Photo block (cam/previewImg/photoStatus/submitPhotoBtn -> startCam/capturePhoto/submitPhoto/retake) -->
 <!-- FLOW: Take Photo = preview only (pendingPhoto) → Submit Photo = confirm (photoData) → Punch -->
-<!-- STEP 2D: Location block (locBox -> getLocation) + Punch 4-status -> punch('IN'/'OUT'/'STORECLOSE'/'WEEKOFF') -->
-<!-- 1=IN (On Arrival), 2=OUT (On Departure), 3=Store Close (employee mark), 4=Sunday Week Off (auto) -->
+<!-- STEP 2D: Location block (locBox -> getLocation) + Punch 4-status -> punch('IN'/'OUT'/'WEEKOFF'/'STORECLOSE') -->
+<!-- 1=IN (On Arrival, 8AM-12PM), 2=OUT (On Departure), 3=Sunday Week Off (MANUAL, employee mark), 4=Store Close (employee mark) -->
 <!-- STEP 2E: My attendance table (myTable <- renderMyTable) -->
 <!-- FUTURE: For a new employee feature (e.g. Leave apply), add a new .card here -->
 <div id="empDash" class="hidden">
@@ -239,7 +308,7 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <div class="topbar"><h2>🙏 Hello, <span id="empName"></span> (<span id="empShowId"></span>)</h2><button class="btn btn-grey btn-small" onclick="openEmpSettings()">⚙️ Settings</button></div>
 <p style="font-size:14px;color:#475569">Designation: <b id="empDesg"></b> | Store: <b id="empStore"></b> | Today's Status: <b id="todayStatus">—</b></p>
 <p id="empStoreLinkWrap" style="font-size:13px;margin-top:4px"><a id="empStoreLink" class="maplink" target="_blank" href="#">🏬 View Store Location</a></p>
-<div class="rule-box" style="margin-top:10px">⏰ <b>Time Rules:</b> IN: <b>10:00 AM – 1:00 PM</b> | OUT: <b>until 11:59:50 PM</b> | <b>OUT before 6 PM = Half Day 🟠</b> | Back-date ❌ (today only)<br>📍 <b>Location Rule:</b> IN/OUT/Store Close works only within <b>50 meters of the Store</b> — outside this range punch is BLOCKED + status <b>Absent</b> ❌</div>
+<div class="rule-box" style="margin-top:10px">⏰ <b>Time Rules:</b> IN: <b>8:00 AM – 12:00 PM</b> | OUT: <b>until 11:59:50 PM</b> | <b>OUT before 6 PM = Half Day 🟠</b> | Back-date ❌ (today only)<br>📍 <b>Location Rule:</b> IN/OUT/Store Close works only within <b>50 meters of the Store</b> — outside this range punch is BLOCKED + status <b>Absent</b> ❌</div>
 <div id="todayHolidayNotice" class="holiday-banner ok hidden"></div>
 
 <div class="grid2" style="margin-top:14px">
@@ -261,12 +330,14 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <button class="btn btn-blue btn-small" onclick="getLocation()">📍 Get Location</button>
 <p style="font-size:12px;color:#64748b;margin-top:6px">Note: Please allow Location permission in your browser.</p>
 <h3 style="margin-top:12px">🕐 Punch Status (4 option)</h3>
+<div class="punch-stack">
 <button id="btnIN" class="btn btn-green" onclick="punch('IN')">1️⃣ 🟢 Attendance IN (On Arrival)</button>
 <button id="btnOUT" class="btn btn-red" onclick="punch('OUT')">2️⃣ 🔴 Attendance OUT (On Departure)</button>
-<button id="btnSC" class="btn btn-blue" onclick="punch('STORECLOSE')">3️⃣ 🏬 Store Close</button>
-<button id="btnWO" class="btn btn-grey" onclick="punch('WEEKOFF')">4️⃣ 🌴 Week Off (Manual / Sunday Auto)</button>
+<button id="btnWO" class="btn btn-grey" onclick="punch('WEEKOFF')">3️⃣ 🌴 Sunday Week Off</button>
+<button id="btnSC" class="btn btn-blue" onclick="punch('STORECLOSE')">4️⃣ 🏬 Store Close</button>
+</div>
 <div class="holiday-banner" style="margin-top:10px">⚠️ <b>If you don't OUT then status is Absent</b> — OUT after IN is compulsory!</div>
-<p class="hint">Sunday gets <b>automatic Week Off</b>. On any day you can mark a MANUAL Week Off with the <b>Week Off button</b> (not after IN).</p>
+<p class="hint">🌴 <b>Sunday Week Off:</b> Sunday ko <b>3rd button se khud Week Off mark karo</b> (automatic nahi hai). Kisi bhi din Week Off le sakte ho (IN ke baad nahi).</p>
 </div>
 </div>
 </div>
@@ -279,7 +350,7 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <button class="btn btn-grey btn-small" onclick="resetMyMonth()">📅 Current Month</button>
 </div>
 <div id="mySummary" class="loc-box">—</div>
-<div style="overflow-x:auto"><table id="myTable"><thead><tr><th>Date</th><th>Day</th><th>In Time</th><th>In Photo</th><th>In Location (Via Link)</th><th>Out Time</th><th>Out Photo</th><th>Out Location (Via Link)</th><th>Working Hours</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+<div class="table-wrap" style="overflow-x:auto"><table id="myTable"><thead><tr><th>Date</th><th>Day</th><th>In Time</th><th>In Photo</th><th>In Location (Via Link)</th><th>Out Time</th><th>Out Photo</th><th>Out Location (Via Link)</th><th>Working Hours</th><th>Status</th></tr></thead><tbody></tbody></table></div>
 </div>
 </div>
 
@@ -309,6 +380,7 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <div><label>Password * (preset: MAIPL@001)</label><input id="nPass" value="MAIPL@001" placeholder="MAIPL@001"><div class="hint">🔑 Default preset: <b>MAIPL@001</b> — change it here if needed.</div></div>
 <div><label>Designation</label><input id="nDesg" placeholder="e.g.: Helper, Driver"></div>
 <div><label>Mobile</label><input id="nMob" placeholder="Mobile number"></div>
+<div><label>📸 Employee Photo (Upload ✅ — data collect hogi)</label><input id="nPhoto" type="file" accept="image/*" onchange="handleProfilePhoto(this)"><div class="hint">Employee ki photo upload karo — ye Admin table + records me save hogi ✅</div><img id="profilePreview" alt="Profile preview"></div>
 <div><label>🏬 Store Name *</label><input id="nStore" placeholder="e.g.: Main Branch, Mumbai Store"></div>
 <div><label>🏙️ Store Area</label><input id="nStoreArea" placeholder="e.g.: Andheri West, Mumbai"><div class="hint">Area/locality of the Store (optional, shown in tables).</div></div>
 <div><label>🧭 Store Latitude * (e.g. 19.0760)</label><input id="nStoreLat" type="number" step="any" placeholder="e.g.: 19.0760"></div>
@@ -327,13 +399,14 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 
 <div class="card">
 <h2>👥 All Employees</h2>
-<div style="overflow-x:auto"><table id="empTable"><thead><tr><th>ID</th><th>Name</th><th>Password</th><th>Designation</th><th>Mobile</th><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Lat / Lon</th><th>📍 Store Location</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+<div class="info">📸 Employee ki <b>uploaded photo</b> yahi collect hoti hai — har row me photo dikhegi ✅</div>
+<div class="table-wrap" style="overflow-x:auto"><table id="empTable"><thead><tr><th>📸 Photo</th><th>ID</th><th>Name</th><th>Password</th><th>Designation</th><th>Mobile</th><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Lat / Lon</th><th>📍 Store Location</th><th>Action</th></tr></thead><tbody></tbody></table></div>
 </div>
 
 <div class="card">
 <h2>🏬 Store Areas — Location Wise</h2>
 <div class="info">Every Store's <b>Name + Area + Latitude/Longitude + Maps Link</b> appears here (auto-grouped from employee Stores). The 50m punch check uses this location.</div>
-<div style="overflow-x:auto"><table id="storeTable"><thead><tr><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Latitude</th><th>🧭 Longitude</th><th>📍 Maps Link</th><th>👥 Employees</th></tr></thead><tbody></tbody></table></div>
+<div class="table-wrap" style="overflow-x:auto"><table id="storeTable"><thead><tr><th>🏬 Store Name</th><th>🏙️ Store Area</th><th>🧭 Latitude</th><th>🧭 Longitude</th><th>📍 Maps Link</th><th>👥 Employees</th></tr></thead><tbody></tbody></table></div>
 </div>
 
 <div class="card">
@@ -348,9 +421,27 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 <button class="btn btn-green btn-small" onclick="exportCSV()">⬇ Excel/CSV Download</button>
 <button class="btn btn-red btn-small" onclick="clearRecords()">🗑 Clear All Data</button>
 </div>
-<div style="overflow-x:auto"><table id="admTable">
-<thead><tr><th>ID</th><th>Name</th><th>🏬 Store</th><th>🏙️ Area</th><th>📍 Store Link</th><th>Date</th><th>In ⏰</th><th>In 📸</th><th>In 📍 Via Link</th><th>Out ⏰</th><th>Out 📸</th><th>Out 📍 Via Link</th><th>Hours</th><th>Status</th></tr></thead>
+<div class="table-wrap" style="overflow-x:auto"><table id="admTable">
+<thead><tr><th>📸 Profile</th><th>ID</th><th>Name</th><th>🏬 Store</th><th>🏙️ Area</th><th>📍 Store Link</th><th>Date</th><th>In ⏰</th><th>In 📸</th><th>In 📍 Via Link</th><th>Out ⏰</th><th>Out 📸</th><th>Out 📍 Via Link</th><th>Hours</th><th>Status</th></tr></thead>
 <tbody></tbody></table></div>
+</div>
+
+<div class="card">
+<h2>💾 Data Backup — Any Device Login Transfer</h2>
+<div class="info">📱 <b>Other device me login fix:</b> ye website ka data abhi <b>is device me saved</b> hai. Dusre mobile/laptop me chalane ke liye:<br>1️⃣ <b>⬇ Backup Download</b> dabao (JSON file milegi)<br>2️⃣ Dusre device pe website kholo → Admin login karo → yahi aakar <b>⬆ Backup Upload</b> se file select karo<br>3️⃣ Bas! Saare Employee ID + Attendance waha bhi login honge ✅<br><br>☁️ <b>Automatic cloud (Firebase) — optional:</b> agar roz auto-sync chahiye to neeche Firebase config lagao (ek baar setup, phir har device auto-sync). Bina cloud ke bhi Backup method se any-device login 100% chalega.</div>
+<div id="cloudStatus" class="loc-box">☁️ Cloud: <b>OFF</b> (This-device mode) — Backup file se transfer karo.</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="btn btn-green btn-small" onclick="exportAllJSON()">⬇ Backup Download (All Data)</button>
+<label class="btn btn-blue btn-small" style="cursor:pointer;margin-top:4px">⬆ Backup Upload (Other Device)<input id="importFile" type="file" accept=".json,application/json" class="hidden" onchange="importAllJSON(this)"></label>
+<button class="btn btn-grey btn-small" onclick="copyTransferHelp()">📋 Copy Transfer Steps</button>
+</div>
+<div class="hint">Backup me Employees + Attendance + Admin + Profile/Uploaded Photos — sab kuch hota hai ✅</div>
+<label style="margin-top:12px">☁️ Firebase Config (optional auto-sync — paste & Save, blank = OFF)</label><input id="fbConfigInput" placeholder='{"apiKey":"...","projectId":"..."} or blank for OFF'>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+<button class="btn btn-blue btn-small" onclick="saveFirebaseConfig()">☁️ Save Cloud Config</button>
+<button class="btn btn-grey btn-small" onclick="clearFirebaseConfig()">✖ Cloud OFF</button>
+<button class="btn btn-orange btn-small" onclick="syncNow()">🔄 Sync Now</button>
+</div>
 </div>
 
 <div class="card">
@@ -481,11 +572,144 @@ input[readonly]{background:#f1f5f9;color:#334155;cursor:not-allowed}
 // getEmp/setEmp, getRec/setRec = JSON read/write helpers
 // FUTURE: For new data (e.g. leaves/salary), add K_NEW + get/set here
 // ============================================================
-const K_EMP='get_attend_employees', K_REC='get_attend_records', K_ADMIN='get_attend_admin';
-const getEmp=()=>JSON.parse(localStorage.getItem(K_EMP)||'[]');
-const setEmp=a=>localStorage.setItem(K_EMP,JSON.stringify(a));
-const getRec=()=>JSON.parse(localStorage.getItem(K_REC)||'[]');
-const setRec=a=>localStorage.setItem(K_REC,JSON.stringify(a));
+const K_EMP='get_attend_employees', K_REC='get_attend_records', K_ADMIN='get_attend_admin', K_FB='get_attend_fbconfig';
+function safeGet(k,fb){try{const v=localStorage.getItem(k);if(v==null)return fb;return JSON.parse(v);}catch(e){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(fb));}catch(e2){return fb;}}}
+function safeSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){try{localStorage.removeItem(k);localStorage.setItem(k,JSON.stringify(v));}catch(e2){alert('⚠️ Storage full! Purani photos/records saaf karo ya Backup lekar Clear karo.');}}}
+const getEmp=()=>safeGet(K_EMP,[]);
+function setEmp(a){safeSet(K_EMP,a);queueCloudPush();}
+const getRec=()=>safeGet(K_REC,[]);
+function setRec(a){safeSet(K_REC,a);queueCloudPush();}
+// ---------- CLOUD SYNC LAYER (any-device login fix) ----------
+// WHY login failed on other device? Data was ONLY in this browser's localStorage.
+// FIX: (A) Backup file transfer (works NOW, no setup) + (B) Optional Firebase auto-sync.
+// Firebase setup (1-time, 5 min): firebase.google.com -> New Project -> Firestore -> Web App config paste below.
+let cloudPushTimer=null;
+function getFbConfig(){try{return JSON.parse(localStorage.getItem(K_FB)||'null');}catch(e){return null;}}
+function isCloudOn(){const c=getFbConfig();return !!(c&&c.projectId);}
+function queueCloudPush(){if(!isCloudOn()){updateSyncBadge();return;}clearTimeout(cloudPushTimer);cloudPushTimer=setTimeout(syncNow,1500);}
+async function ensureFirebase(){
+  const cfg=getFbConfig();
+  if(!cfg) return null;
+  try{
+    if(!window.firebase){await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');}
+    if(!firebase.apps.length)firebase.initializeApp(cfg);
+    return firebase.firestore();
+  }catch(e){console.warn('Firebase load fail',e);return null;}
+}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+async function syncNow(){
+  if(!isCloudOn()){updateSyncBadge();return alert('☁️ Cloud OFF hai. Backup file se transfer karo, ya Firebase config save karo.');}
+  const box=document.getElementById('cloudStatus');
+  try{
+    if(box)box.innerHTML='⏳ Syncing...';
+    const db=await ensureFirebase();
+    if(!db){if(box)box.innerHTML='❌ Cloud connect fail — internet/config check karo.';return;}
+    const cfg=getFbConfig();
+    const appId=(cfg.appId||'get-attended-default');
+    const docRef=db.collection('attendance_apps').doc(appId);
+    // Push local -> cloud (merge, latest wins by updatedAt)
+    const payload={emp:getEmp(),rec:getRec(),admin:getAdmin(),updatedAt:Date.now()};
+    const remote=await docRef.get();
+    if(remote.exists){
+      const r=remote.data();
+      // Merge: union by id/date to avoid overwriting other device data
+      const mergedEmp=mergeEmp(r.emp||[],payload.emp);
+      const mergedRec=mergeRec(r.rec||[],payload.rec);
+      const mergedAdmin=(r.updatedAt||0)>(payload.updatedAt||0)?r.admin:payload.admin;
+      await docRef.set({emp:mergedEmp,rec:mergedRec,admin:mergedAdmin,updatedAt:Date.now()});
+      safeSet(K_EMP,mergedEmp);safeSet(K_REC,mergedRec);
+      try{localStorage.setItem(K_ADMIN,JSON.stringify(mergedAdmin));}catch(e){}
+    }else{
+      await docRef.set(payload);
+    }
+    renderAdminInfo();
+    if(typeof renderEmpTable==='function'&&!document.getElementById('admDash').classList.contains('hidden')){try{renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();}catch(e){}}
+    if(box)box.innerHTML='✅ Cloud sync done: <b>'+getEmp().length+'</b> employees, <b>'+getRec().length+'</b> records. Ab kisi bhi device se login hoga ✅';
+    updateSyncBadge();
+    alert('✅ Cloud sync successful! Dusre device pe same Firebase config + Sync Now dabao.');
+  }catch(e){console.warn(e);if(box)box.innerHTML='❌ Sync fail: '+e.message;alert('❌ Sync fail: '+e.message);}
+}
+function mergeEmp(a,b){const m={};a.concat(b).forEach(e=>{if(e&&e.id)m[e.id.toLowerCase()]=e;});return Object.values(m);}
+function mergeRec(a,b){const m={};a.concat(b).forEach(r=>{if(r&&r.empId&&r.date)m[r.empId.toLowerCase()+'|'+r.date]=r;});return Object.values(m).sort((x,y)=>(x.date+x.empId).localeCompare(y.date+y.empId));}
+async function cloudPullOnStart(){
+  if(!isCloudOn()){updateSyncBadge();showEmptyDeviceNote();return;}
+  try{
+    const db=await ensureFirebase();
+    if(!db){updateSyncBadge();return;}
+    const cfg=getFbConfig();
+    const docRef=db.collection('attendance_apps').doc(cfg.appId||'get-attended-default');
+    const snap=await docRef.get();
+    if(snap.exists){
+      const r=snap.data();
+      if(r.emp&&r.emp.length)safeSet(K_EMP,mergeEmp(getEmp(),r.emp));
+      if(r.rec&&r.rec.length)safeSet(K_REC,mergeRec(getRec(),r.rec));
+      if(r.admin&&r.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(r.admin));}catch(e){}}
+      renderAdminInfo();
+    }
+  }catch(e){console.warn('cloud pull fail',e);}
+  updateSyncBadge();showEmptyDeviceNote();
+}
+function updateSyncBadge(){
+  const el=document.getElementById('syncBadge');if(!el)return;
+  if(isCloudOn()){el.textContent='☁️ Cloud ON';el.className='sync-badge cloud';}
+  else{el.textContent='📱 This device only';el.className='sync-badge off';}
+  const box=document.getElementById('cloudStatus');
+  if(box&&!isCloudOn())box.innerHTML='☁️ Cloud: <b>OFF</b> (This-device mode) — Backup file se transfer karo. Employees: <b>'+getEmp().length+'</b>, Records: <b>'+getRec().length+'</b>';
+  const fb=document.getElementById('fbConfigInput');if(fb&&!fb.value){try{const c=getFbConfig();if(c)fb.value=JSON.stringify(c);}catch(e){}}
+}
+function showEmptyDeviceNote(){
+  const n=document.getElementById('emptyDeviceNote');if(!n)return;
+  const emps=getEmp();
+  if(!emps.length){
+    n.classList.remove('hidden');
+    n.innerHTML='📱 <b>Is device pe koi Employee ID nahi mila.</b><br>Admin ne dusre device pe ID banayi hai? To Admin se <b>Backup file</b> lekar Admin panel se Upload karo — ya ☁️ Cloud ON karo. Default Admin: <b>admin / Admin@124</b>';
+  }else{n.classList.add('hidden');}
+}
+function saveFirebaseConfig(){
+  const v=document.getElementById('fbConfigInput').value.trim();
+  if(!v){return alert('Paste Firebase web config JSON first (ya Cloud OFF rakho).');}
+  try{
+    let cfg=JSON.parse(v);
+    if(cfg.firebase)cfg=cfg.firebase;
+    if(!cfg.projectId||!cfg.apiKey) return alert('❌ Config me projectId + apiKey chahiye!');
+    if(!cfg.appId)cfg.appId='get-attended-default';
+    localStorage.setItem(K_FB,JSON.stringify(cfg));
+    updateSyncBadge();
+    alert('✅ Cloud config saved! Ab Sync Now dabao.');
+    syncNow();
+  }catch(e){alert('❌ Invalid JSON! Firebase web config paste karo.');}
+}
+function clearFirebaseConfig(){localStorage.removeItem(K_FB);updateSyncBadge();alert('☁️ Cloud OFF — ab This-device mode + Backup transfer.');}
+function exportAllJSON(){
+  const data={app:'Get-Attendend',exportedAt:new Date().toISOString(),emp:getEmp(),rec:getRec(),admin:getAdmin()};
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='attendance-backup-'+todayStr()+'.json';a.click();
+  alert('✅ Backup downloaded! Dusre device pe Admin login → Backup Upload karo.');
+}
+function importAllJSON(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      const emp=d.emp||d.employees||[];
+      const rec=d.rec||d.records||[];
+      if(!emp.length&&!rec.length) return alert('❌ File me koi data nahi mila!');
+      const mergedEmp=mergeEmp(getEmp(),emp);
+      const mergedRec=mergeRec(getRec(),rec);
+      safeSet(K_EMP,mergedEmp);safeSet(K_REC,mergedRec);
+      if(d.admin&&d.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(d.admin));renderAdminInfo();}catch(e){}}
+      renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();showEmptyDeviceNote();queueCloudPush();
+      alert('✅ Backup imported! Employees: '+mergedEmp.length+', Records: '+mergedRec.length+'\nAb any-device login chalega ✅');
+    }catch(e){alert('❌ Invalid backup file!');}
+    input.value='';
+  };
+  rd.readAsText(f);
+}
+function copyTransferHelp(){
+  const t='Dusre device me login kaise kare:\n1. Is device (Admin) se Backup Download karo\n2. File WhatsApp/share karke dusre device me bhejo\n3. Dusre device pe website kholo, Admin login karo, Backup Upload karo\n4. Ab Employee + Admin dono login honge ✅';
+  try{navigator.clipboard.writeText(t);alert('📋 Steps copied! Paste karke share karo.');}catch(e){alert(t);}
+}
 // STEP 0A: Month helpers (employee month-wise view + new-month auto reset)
 // monthStr(ds) = 'YYYY-MM' | curMonthStr() = this month's 'YYYY-MM'
 // NOTE: Admin-side WeekOff/StoreClose management REMOVED — Sunday auto + employee-side marking only.
@@ -497,8 +721,18 @@ const SES_TIMEOUT_MS=SES_EMP_MS;
 function sesTimeoutFor(s){return (s&&s.role==='adm')?SES_ADM_MS:SES_EMP_MS;}
 let sesTimer=null, sesCountInt=null;
 const getSession=()=>{try{return JSON.parse(localStorage.getItem(K_SES)||'null');}catch(e){return null;}};
-const saveSession=s=>localStorage.setItem(K_SES,JSON.stringify(s));
-const clearSession=()=>localStorage.removeItem(K_SES);
+const saveSession=s=>{try{localStorage.setItem(K_SES,JSON.stringify(s));}catch(e){}};
+const clearSession=()=>{try{localStorage.removeItem(K_SES);}catch(e){}};
+function storageAvailable(){try{const t='__t'+Date.now();localStorage.setItem(t,t);localStorage.removeItem(t);return true;}catch(e){return false;}}
+function checkStorageWarn(){
+  const w=document.getElementById('storageWarn');if(!w)return;
+  if(!storageAvailable()){
+    w.classList.remove('hidden');
+    w.innerHTML='⚠️ <b>Browser storage blocked hai!</b> (Private mode / Safari settings)<br>Login kaam karega par refresh pe logout ho sakta hai. Normal mode me kholo ya Site Settings me Storage Allow karo. Android + iPhone dono me Normal mode use karo.';
+  }else{w.classList.add('hidden');}
+}
+// Mobile auto-capital/space fix: ID compare me extra spaces + case ignore (password exact, sirf trim)
+function normId(s){return String(s||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim().replace(/\s+/g,'');}
 function sesRemaining(){const s=getSession();if(!s||!s.loginAt)return 0;return sesTimeoutFor(s)-(Date.now()-s.loginAt);}
 function startSesTimers(){
   stopSesTimers();
@@ -532,7 +766,7 @@ const DEFAULT_ADMIN={id:'admin',pass:'Admin@124',mob:'',movie:'',birth:'',school
 // STEP 1A: Admin load (falls back to '' when new fields are missing in old saved data)
 function getAdmin(){try{const a=JSON.parse(localStorage.getItem(K_ADMIN)||'null');if(a&&a.id&&a.pass){if(!a.mob)a.mob='';if(!a.movie)a.movie='';if(!a.birth)a.birth='';if(!a.school)a.school='';if(a.id==='admin001'){a.id='admin';localStorage.setItem(K_ADMIN,JSON.stringify(a));}return a;}}catch(e){}return {...DEFAULT_ADMIN};}
 // STEP 1B: Admin save (preserving all 4 answers is mandatory)
-function setAdmin(a){if(!a.mob)a.mob='';if(!a.movie)a.movie='';if(!a.birth)a.birth='';if(!a.school)a.school='';localStorage.setItem(K_ADMIN,JSON.stringify(a));renderAdminInfo();}
+function setAdmin(a){if(!a.mob)a.mob='';if(!a.movie)a.movie='';if(!a.birth)a.birth='';if(!a.school)a.school='';try{localStorage.setItem(K_ADMIN,JSON.stringify(a));}catch(e){}renderAdminInfo();try{queueCloudPush();}catch(e){}}
 // STEP 1C: Admin info UI refresh (current ID/mobile/security-status + form autofill)
 function renderAdminInfo(){
  const ad=getAdmin();
@@ -643,15 +877,15 @@ function todayStr(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1
 function timeStr(d=new Date()){return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function fmtDate(ds){const [y,m,dd]=ds.split('-');return dd+'/'+m+'/'+y;}
 // ------------------------------------------------------------
-// JS STEP 3A: TIME RULES (Check-IN 10AM-1PM, OUT till 11:59:50PM, Half-Day <6PM)
-// IN_START=10:00, IN_END=13:00 (1PM), OUT_DEADLINE=23:59:50, HALF_CUTOFF=18:00
+// JS STEP 3A: TIME RULES (Check-IN 8AM-12PM, OUT till 11:59:50PM, Half-Day <6PM)
+// IN_START=08:00, IN_END=12:00 (noon), OUT_DEADLINE=23:59:50, HALF_CUTOFF=18:00
 // secsOfNow()/secsOfTimeStr() = "hh:mm:ss AM/PM" -> seconds (0-86399)
 // getStatus(r) = Present / Half Day / IN Only / Store Close / Week Off
 //   - type 'StoreClose' -> Store Close (blue) | type 'WeekOff' -> Week Off (teal)
 //   - Duty + OUT<6PM -> Half Day | Duty + OUT>=6PM -> Present | no OUT -> IN Only
 // FUTURE: To change the time window, change the constants only here
 // ------------------------------------------------------------
-const IN_START_SEC=10*3600, IN_END_SEC=13*3600, OUT_DEADLINE_SEC=23*3600+59*60+50, HALF_CUTOFF_SEC=18*3600;
+const IN_START_SEC=8*3600, IN_END_SEC=12*3600, OUT_DEADLINE_SEC=23*3600+59*60+50, HALF_CUTOFF_SEC=18*3600;
 function secsOfNow(d=new Date()){return d.getHours()*3600+d.getMinutes()*60+d.getSeconds();}
 function secsOfTimeStr(s){try{const m=String(s||'').match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);if(!m)return -1;let[h,mi,se]=[+m[1],+m[2],+m[3]];const ap=(m[4]||'').toUpperCase();if(ap.startsWith('P')){if(h<12)h+=12;}if(ap.startsWith('A')){if(h===12)h=0;}return h*3600+mi*60+se;}catch(e){return -1;}}
 function locLinkOf(lat,lon){if(!lat||!lon)return '';return 'https://maps.google.com/?q='+lat+','+lon;}
@@ -668,9 +902,9 @@ function getStatus(r){
 }
 function statusBadge(r){const s=getStatus(r);return '<span class="badge '+s.cls+'">'+s.label+'</span>';}
 // ------------------------------------------------------------
-// JS STEP 3B: SUNDAY AUTO WEEK-OFF + MONTH HELPERS (NO admin holiday mgmt, NO back-date)
-// isSundayStr(ds) = Sunday? | dayName(ds) | monthStr(ds)='YYYY-MM' | curMonthStr()
-// RULE: Automatic Week Off every Sunday (as soon as the employee opens the app). Store Close is marked by the employee.
+// JS STEP 3B: WEEK-OFF (MANUAL ONLY, no auto) + MONTH HELPERS (NO admin holiday mgmt, NO back-date)
+// isSundayStr(ds) = Sunday? (only for display) | dayName(ds) | monthStr(ds)='YYYY-MM' | curMonthStr()
+// RULE: NO automatic Sunday Week Off — employee marks 3rd button manually (Sunday or any day).
 // RULE: Back-date attendance is never allowed — punch() works only on todayStr().
 // RULE: Employee view resets every month (default=current month), Admin keeps every month's data.
 // ------------------------------------------------------------
@@ -719,12 +953,12 @@ function refreshCaptcha(){
   const q=document.getElementById('captchaQ');if(q)q.textContent=a+' + '+b+' = ?';
   const c=document.getElementById('captchaAns');if(c)c.value='';
 }
-// STEP 5A: Step-1 Admin ID verify
+// STEP 5A: Step-1 Admin ID verify (universal: mobile space/capital auto-fix)
 function admNextToHuman(){
-  const id=document.getElementById('admId').value.trim();
+  const id=normId(document.getElementById('admId').value);
   if(!id) return alert('Please enter Admin ID');
   const ad=getAdmin();
-  if(id.toLowerCase()!==String(ad.id).toLowerCase()) return alert('❌ Wrong Admin ID! (Employees cannot proceed further)');
+  if(id.toLowerCase()!==normId(ad.id).toLowerCase()) return alert('❌ Wrong Admin ID! (Employees cannot proceed further)');
   admIdOk=ad.id;
   document.getElementById('admVerIdShow').textContent='('+ad.id+')';
   document.getElementById('admStep1').classList.add('done');
@@ -748,10 +982,19 @@ function admVerifyHuman(){
 
 // ===== LOGIN (session emp-15m/adm-1H auto-logout + first-login compulsory change) =====
 function needsPassChange(emp){try{if(!emp)return false;if(emp.mustChangePass===true)return true;if(emp.mustChangePass===false)return false;if(typeof DEFAULT_EMP_PASS!=='undefined'&&emp.pass===DEFAULT_EMP_PASS)return true;return false;}catch(e){return false;}}
-function employeeLogin(){const id=document.getElementById('empId').value.trim(), p=document.getElementById('empPass').value.trim();
+function employeeLogin(){
+const rawId=document.getElementById('empId').value, rawP=document.getElementById('empPass').value;
+// Universal OS fix: mobile auto-space/capital + invisible chars clean (Android/iOS keyboards)
+const id=normId(rawId), p=String(rawP||'').trim();
 if(!id||!p) return alert('Please enter ID and Password');
-const f=getEmp().find(x=>x.id.toLowerCase()===id.toLowerCase()&&x.pass===p);
-if(!f) return alert('❌ Wrong ID or Password! Please get the correct ID from Admin.');
+const all=getEmp();
+if(!all.length) return alert('📱 Is device pe koi Employee ID nahi hai!\n(Android/iPhone/PC — kisi pe bhi yehi dikhega jab tak data transfer na ho)\n\nFIX:\n1. Admin se Backup file lekar Admin panel me Upload karo, OR\n2. Cloud ON karo + Sync Now\n\nPhir same ID se any-device login hoga ✅\n(Default Admin: admin / Admin@124)');
+const f=all.find(x=>normId(x.id).toLowerCase()===id.toLowerCase()&&String(x.pass)===p);
+if(!f){
+  const idExists=all.some(x=>normId(x.id).toLowerCase()===id.toLowerCase());
+  if(idExists) return alert('❌ Wrong Password! (Mobile pe Auto-Capital/space check karo)\nForgot link se reset karo ya Admin se pucho.');
+  return alert('❌ Wrong ID or Password!\n(Is device pe ye ID nahi mili. Admin ne dusre device pe banayi hai to Backup Upload / Cloud Sync karo, phir login karo.)');
+}
 curEmp=f;saveSession({role:'emp',empId:f.id,loginAt:Date.now()});showDash('emp');startSesTimers();
 if(needsPassChange(f)){openFirstLoginModal();}}
 function openFirstLoginModal(){
@@ -778,11 +1021,11 @@ function firstLoginChange(){
 function adminLogin(){
 if(!admIdOk) return alert('❌ Please verify Admin ID in Step 1 first!');
 if(!admHumanOk) return alert('❌ Please complete Step 2 Captcha + Human Verification (Verify & Continue) first!');
-const p=document.getElementById('admPass').value.trim();
+const p=String(document.getElementById('admPass').value||'').trim();
 if(!p) return alert('Please enter Admin Password (Step 3)');
 const ad=getAdmin();
-if(admIdOk.toLowerCase()===String(ad.id).toLowerCase()&&p===ad.pass){saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
-else alert('❌ Wrong Admin Password!\n(No hint is shown for security. Please reset via the Forgot link.)');}
+if(normId(admIdOk).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass){saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
+else alert('❌ Wrong Admin Password! (Mobile pe Auto-Capital/space check karo)\n(No hint is shown for security. Please reset via the Forgot link.)');}
 function showDash(w){
 document.getElementById('loginSection').classList.add('hidden');
 document.getElementById('logoutBtn').classList.remove('hidden');
@@ -797,7 +1040,10 @@ if(curEmp.storeLink){sl.href=curEmp.storeLink;sl.textContent='🏬 View Store Lo
 else{slw.style.display='none';}
 // STEP 5E-i: Month default = current month (view auto-resets in a new month, data stays safe with Admin)
 const mm=document.getElementById('myMonth');if(mm&&!mm.value)mm.value=curMonthStr();
-startCam();getLocation();autoWeekOffSunday();renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();}
+// NOTE: silent auto-start — mobile (Android/iOS) pe alert nahi (login fail confusion hota tha). User button se start karega.
+try{startCam(true);}catch(e){}
+try{getLocation(true);}catch(e){}
+autoWeekOffSunday();renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();}
 else{document.getElementById('admDash').classList.remove('hidden');
 document.getElementById('hdrUser').textContent='🔐 Admin';
 renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();autofillEmpId();renderAdminInfo();}}
@@ -872,42 +1118,26 @@ function tryRestoreSession(){
 function updateTodayStatus(){
 const r=getRec().find(x=>x.empId===curEmp.id&&x.date===todayStr());
 const el=document.getElementById('todayStatus');
-if(!r){el.textContent=isSundayStr(todayStr())?'🌴 Sunday Week Off (Auto)':'Not marked IN yet';return;}
+if(!r){el.textContent='Not marked IN yet';return;}
 const t=recType(r);
-if(t==='WeekOff'){el.textContent=r.auto?'🌴 Week Off (Sunday Auto)':'🌴 Week Off (Manual)';return;}
+if(t==='WeekOff'){el.textContent='🌴 Week Off (Sunday / Manual)';return;}
 if(t==='StoreClose'){el.textContent='🏬 Store Close';return;}
 if(!r.outTime){el.textContent='IN ✅ '+r.inTime+' — OUT pending';return;}
 const s=getStatus(r);
 el.textContent='IN ✅ '+r.inTime+' | OUT ✅ '+r.outTime+' → '+s.label+(s.label==='Half Day'?' 🟠 (OUT before 6 PM)':' 🟢');}
-// STEP 5E: Sunday auto Week-Off banner + Week Off MANUAL (employee can mark it on any day)
-// On Sunday the automatic Week Off record is created as soon as the app opens (via autoWeekOffSunday)
-// On non-Sunday days the employee can take MANUAL Week Off with the Week Off button
+// STEP 5E: Week-Off banner (MANUAL only — NO automatic Sunday off)
+// 3rd button = Sunday Week Off (manual), 4th = Store Close. Sunday is a normal working day.
 function refreshEmpHolidayNotice(){
   const box=document.getElementById('todayHolidayNotice');if(!box)return;
-  const sun=isSundayStr(todayStr());
   const bIN=document.getElementById('btnIN'), bOUT=document.getElementById('btnOUT'), bSC=document.getElementById('btnSC'), bWO=document.getElementById('btnWO');
   box.classList.remove('hidden');
-  if(sun){
-    box.classList.remove('ok');
-    box.innerHTML='🌴 Today is Sunday — <b>automatic Week Off</b> ✅ (IN/OUT/Store Close closed)';
-    if(bIN)bIN.disabled=true; if(bOUT)bOUT.disabled=true; if(bSC)bSC.disabled=true; if(bWO)bWO.disabled=true;
-  } else {
-    box.classList.add('ok');
-    box.innerHTML='✅ Store is open today. IN: 10AM–1PM • OUT: until 11:59:50PM • OUT before 6PM = Half Day.<br>🌴 You can mark today as Week Off yourself with the <b>Week Off (Manual)</b> button.';
-    if(bIN)bIN.disabled=false; if(bOUT)bOUT.disabled=false; if(bSC)bSC.disabled=false; if(bWO)bWO.disabled=false;
-  }
+  box.classList.add('ok');
+  const sun=isSundayStr(todayStr());
+  box.innerHTML=(sun?'🌴 Today is Sunday — <b>3rd button se Week Off mark karo</b> (manual, automatic nahi).<br>':'✅ Store is open today. ')+'IN: 8AM–12PM • OUT: until 11:59:50PM • OUT before 6PM = Half Day.<br>🌴 Week Off (3rd) ya Store Close (4th) khud mark karo.';
+  if(bIN)bIN.disabled=false; if(bOUT)bOUT.disabled=false; if(bSC)bSC.disabled=false; if(bWO)bWO.disabled=false;
 }
-// STEP 5F: Sunday auto-mark (without photo/location, so Week Off appears in month status + admin table)
-function autoWeekOffSunday(){
-  try{
-    const d=todayStr();
-    if(!isSundayStr(d))return;
-    let recs=getRec();
-    if(recs.some(x=>x.empId===curEmp.id&&x.date===d))return;
-    recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'WeekOff',inTime:'',inPhoto:'',inLat:'',inLon:'',inLocLink:'',outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:'',auto:true});
-    setRec(recs);
-  }catch(e){}
-}
+// STEP 5F: Sunday AUTO REMOVED — no auto Week-Off record (manual only via 3rd button)
+function autoWeekOffSunday(){return;}
 
 // ------------------------------------------------------------
 // JS STEP 6: EMPLOYEE CRUD + MANUAL ID (set by Admin) + STORE LAT/LON MAPPING
@@ -976,6 +1206,7 @@ const n=document.getElementById('nName').value.trim(), id=document.getElementByI
 p=document.getElementById('nPass').value.trim(), d=document.getElementById('nDesg').value.trim(), m=document.getElementById('nMob').value.trim(),
 st=document.getElementById('nStore').value.trim(),
 stArea=document.getElementById('nStoreArea').value.trim();
+const profPhoto=tempProfilePhoto||'';
 let sLat=document.getElementById('nStoreLat').value.trim(), sLon=document.getElementById('nStoreLon').value.trim();
 let stLink=document.getElementById('nStoreLink').value.trim();
 if(!n||!id||!p) return alert('Name, ID and Password are required (Admin sets the ID manually)');
@@ -990,9 +1221,10 @@ if(isNaN(lo)||lo<-180||lo>180) return alert('❌ Store Longitude must be between
 if(!stLink){stLink=buildStoreLink(la,lo);document.getElementById('nStoreLink').value=stLink;}
 const arr=getEmp();
 if(arr.some(x=>x.id.toLowerCase()===id.toLowerCase())){return alert('❌ This ID "'+id+'" already exists! Please type a different unique ID manually. (Use ↻ Suggest for an idea)');}
-arr.push({name:n,id,pass:p,desg:d,mob:m,store:st,storeArea:stArea,storeLat:la,storeLon:lo,storeLink:stLink,created:todayStr(),mustChangePass:true});setEmp(arr);
-alert('✅ ID created (Manual ID)!\nShare with Employee:\nID: '+id+'\nPassword: '+p+' (preset MAIPL@001 — change on first login is compulsory)\nStore: '+st+(stArea?' ('+stArea+')':'')+'\nLat/Lon: '+la+', '+lo);
+arr.push({name:n,id,pass:p,desg:d,mob:m,photo:profPhoto,store:st,storeArea:stArea,storeLat:la,storeLon:lo,storeLink:stLink,created:todayStr(),mustChangePass:true});setEmp(arr);
+alert('✅ ID created (Manual ID)!'+(profPhoto?' 📸 Photo saved ✅':'')+'\nShare with Employee:\nID: '+id+'\nPassword: '+p+' (preset MAIPL@001 — change on first login is compulsory)\nStore: '+st+(stArea?' ('+stArea+')':'')+'\nLat/Lon: '+la+', '+lo);
 ['nName','nId','nDesg','nMob','nStore','nStoreArea','nStoreLat','nStoreLon','nStoreLink'].forEach(i=>document.getElementById(i).value='');
+tempProfilePhoto='';const npf=document.getElementById('nPhoto');if(npf)npf.value='';const ppv=document.getElementById('profilePreview');if(ppv){ppv.src='';ppv.style.display='none';}
 document.getElementById('nPass').value=DEFAULT_EMP_PASS;
 renderEmpTable();renderStoreAreas();updateStats();}
 // delEmp = PERMANENT delete: the ID is removed everywhere (All Employees, Store Areas, filters, stats)
@@ -1000,7 +1232,7 @@ renderEmpTable();renderStoreAreas();updateStats();}
 function delEmp(id){if(!confirm('Delete Employee '+id+' permanently?\n(The ID will be removed everywhere — old attendance rows will remain ONLY in the records table)'))return;setEmp(getEmp().filter(x=>x.id!==id));const fe=document.getElementById('fEmp');if(fe&&fe.value===id)fe.value='';renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();}
 function renderEmpTable(){
 const tb=document.querySelector('#empTable tbody');tb.innerHTML='';
-getEmp().forEach(e=>{const sName=e.store||'-';const sArea=e.storeArea||'-';const sLink=e.storeLink?`<a class="maplink" target="_blank" href="${e.storeLink}">🗺 Open Link</a>`:'-';const c=getStoreCoords(e);const latLon=c?(c.lat+',<br>'+c.lon):'-';tb.innerHTML+=`<tr><td><b>${e.id}</b></td><td>${e.name}</td><td>${e.pass}</td><td>${e.desg||'-'}</td><td>${e.mob||'-'}</td><td><b>${sName}</b></td><td>${sArea}</td><td style="font-size:12px">${latLon}</td><td>${sLink}</td><td><button class="btn btn-red btn-small" onclick="delEmp('${e.id}')">Delete</button></td></tr>`;});
+getEmp().forEach(e=>{const sName=e.store||'-';const sArea=e.storeArea||'-';const sLink=e.storeLink?`<a class="maplink" target="_blank" href="${e.storeLink}">🗺 Open Link</a>`:'-';const c=getStoreCoords(e);const latLon=c?(c.lat+',<br>'+c.lon):'-';const prof=e.photo?`<img src="${e.photo}" onclick="zoomSrc(this)" title="Uploaded profile photo">`:'<span style="color:#94a3b8">—</span>';tb.innerHTML+=`<tr><td>${prof}</td><td><b>${e.id}</b></td><td>${e.name}</td><td>${e.pass}</td><td>${e.desg||'-'}</td><td>${e.mob||'-'}</td><td><b>${sName}</b></td><td>${sArea}</td><td style="font-size:12px">${latLon}</td><td>${sLink}</td><td><button class="btn btn-red btn-small" onclick="delEmp('${e.id}')">Delete</button></td></tr>`;});
 const f=document.getElementById('fEmp');const cur=f.value;
 f.innerHTML='<option value="">All Employees</option>'+getEmp().map(e=>`<option value="${e.id}">${e.id} - ${e.name}</option>`).join('');f.value=cur;}
 // STEP 6B: Store Areas section — auto-grouped from employee Stores (Name + Lat/Lon + Link + count)
@@ -1029,14 +1261,14 @@ const emps=getEmp(),recs=getRec(),t=todayStr();
 const empIds=new Set(emps.map(e=>e.id));
 // Records of deleted IDs are NOT counted in stats — shown only in the table
 const todayRecs=recs.filter(r=>r.date===t&&recType(r)==='Duty'&&empIds.has(r.empId));
-const todaySC=recs.filter(r=>r.date===t&&recType(r)==='StoreClose'&&empIds.has(r.empId)).length;
+const todayMarked=recs.filter(r=>r.date===t&&empIds.has(r.empId)).length;
 let full=0,half=0;
 todayRecs.forEach(r=>{const s=getStatus(r);if(s.label==='Present')full++;else if(s.label==='Half Day')half++;});
 document.getElementById('stEmp').textContent=emps.length;
 document.getElementById('stRec').textContent=recs.length;
 document.getElementById('stToday').textContent=full;
 const sh=document.getElementById('stHalf');if(sh)sh.textContent=half;
-document.getElementById('stAbs').textContent=isSundayStr(t)?'—':Math.max(0,emps.length-todayRecs.length-todaySC);}
+document.getElementById('stAbs').textContent=Math.max(0,emps.length-todayMarked);}
 // STEP 6C: Triple-click stats -> employee list (Name & ID only)
 let statClicks={}, statTimer=null;
 function statTriple(type){
@@ -1057,8 +1289,7 @@ function showStatList(type){
   else if(type==='half'){const ids=new Set();todayDuty.forEach(r=>{if(getStatus(r).label==='Half Day')ids.add(r.empId);});list=emps.filter(e=>ids.has(e.id)).map(e=>({name:e.name,id:e.id}));title='🟠 Half Day Today';sub='Triple-click list • '+list.length+' employees';}
   else if(type==='records'){const ids=new Set(recs.map(r=>r.empId));list=emps.filter(e=>ids.has(e.id)).map(e=>({name:e.name,id:e.id}));title='📊 Total Records — Employees';sub='Employees having any record • '+list.length+' employees';}
   else if(type==='absent'){
-    if(isSundayStr(t)){list=[];title='🔴 Absent Today';sub='Sunday — absence is not counted';}
-    else{const marked=new Set(recs.filter(r=>r.date===t).map(r=>r.empId));list=emps.filter(e=>!marked.has(e.id)).map(e=>({name:e.name,id:e.id}));title='🔴 Absent Today';sub='Triple-click list • '+list.length+' employees';}
+    {const marked=new Set(recs.filter(r=>r.date===t).map(r=>r.empId));list=emps.filter(e=>!marked.has(e.id)).map(e=>({name:e.name,id:e.id}));title='🔴 Absent Today';sub='Triple-click list • '+list.length+' employees';}
   }
   document.getElementById('statListTitle').textContent=title;
   document.getElementById('statListSub').textContent=sub;
@@ -1069,20 +1300,34 @@ function showStatList(type){
 }
 
 // ------------------------------------------------------------
-// JS STEP 7: CAMERA — FRONT ONLY + NO UPLOAD (preview + submit flow)
-// RULE: Only the front (selfie) camera is allowed, the back camera is never tried. There is no gallery/file-upload option (❌ Not Allowed).
-// startCam() = FRONT camera on (prefers exact:'user', falls back to ideal:'user') | capturePhoto() = preview only | submitPhoto() = confirm
+// JS STEP 7: CAMERA — FRONT ONLY + NO UPLOAD FOR PUNCH (preview + submit flow)
+// RULE: Punch IN/OUT/StoreClose me sirf front (selfie) camera allowed — gallery/upload ❌ Not Allowed.
+// startCam() = FRONT camera on | capturePhoto() = preview only | submitPhoto() = confirm
 // RULE: No punch without Submit (photoData stays empty)
+// NOTE: Employee profile photo (Admin side nPhoto upload) alag se collect hoti hai ✅ — wo punch gallery nahi hai.
 // NOTE: HTTPS/localhost + camera permission required
 // ------------------------------------------------------------
-async function startCam(){try{
-if(stream)stream.getTracks().forEach(t=>t.stop());
-try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'user'}},audio:false});}
-catch(e2){stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});}
-const v=document.getElementById('cam');v.srcObject=stream;v.classList.remove('hidden');
-document.getElementById('previewImg').classList.add('hidden');
-const st=document.getElementById('photoStatus');if(st)st.innerHTML='🤳 <b>Front camera ON</b> — Gallery/upload is not allowed ❌<br>Now press 📸 Take Photo (Preview).';}
-catch(e){alert('❌ Front camera failed to open: '+e.message+'\n(Front/selfie camera required — back camera or upload is not allowed ❌)\nPlease open on HTTPS or localhost and allow Camera access');}}
+async function startCam(silent){
+  // silent=true => auto-start after login (mobile/iOS pe permission bina gesture ke block hoti hai — alert MAT dikhao, login fail jaisa lagega)
+  // silent=false/undefined => user ne button dabakar start kiya — tabhi alert dikhao
+  const auto=!!silent;
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      throw new Error('Camera API not supported in this browser');
+    }
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+    try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'user'}},audio:false});}
+    catch(e2){stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});}
+    const v=document.getElementById('cam');v.srcObject=stream;v.classList.remove('hidden');
+    document.getElementById('previewImg').classList.add('hidden');
+    const st=document.getElementById('photoStatus');if(st)st.innerHTML='🤳 <b>Front camera ON</b> — Gallery/upload is not allowed ❌<br>Now press 📸 Take Photo (Preview).';
+  }catch(e){
+    const st=document.getElementById('photoStatus');
+    const msg='📷 Camera auto-start nahi hui ('+e.message+'). Login ✅ ho gaya hai — ghabraye nahi!<br>HTTPS pe kholo + Allow dabao, phir <b>📷 Start Front Camera</b> dabao. (Android/iOS/Windows/Mac/Linux sab me yahi rule hai)';
+    if(st)st.innerHTML=msg;
+    if(!auto)alert('❌ Front camera failed: '+e.message+'\n(HTTPS + Allow required)\nLogin ho gaya hai — sirf camera ke liye Start dabao.');
+  }
+}
 function capturePhoto(){
 const v=document.getElementById('cam');
 if(!v.srcObject) return alert('Please start the camera first');
@@ -1099,7 +1344,37 @@ photoData=pendingPhoto;pendingPhoto='';
 const sb=document.getElementById('submitPhotoBtn');if(sb)sb.classList.add('hidden');
 const st=document.getElementById('photoStatus');if(st)st.innerHTML='✅ <b>Photo submitted!</b> Now you can Punch (IN / OUT / Store Close).';
 alert('✅ Photo submitted! Now please Punch.');}
-function retake(){photoData='';pendingPhoto='';document.getElementById('previewImg').classList.add('hidden');document.getElementById('cam').classList.remove('hidden');const sb=document.getElementById('submitPhotoBtn');if(sb)sb.classList.add('hidden');const st=document.getElementById('photoStatus');if(st)st.innerHTML='📷 Front camera only — Gallery/upload is not allowed ❌<br>Step 1: Start Front Camera → Step 2: Take Photo (preview) → Step 3: Submit ✅';}
+function retake(){photoData='';pendingPhoto='';document.getElementById('previewImg').classList.add('hidden');document.getElementById('cam').classList.remove('hidden');const sb=document.getElementById('submitPhotoBtn');if(sb)sb.classList.add('hidden');const st=document.getElementById('photoStatus');if(st)st.innerHTML='📷 Front camera only — Gallery/upload is not allowed ❌<br>Step 1: Start Camera → Step 2: Take Photo (preview) → Step 3: Submit ✅';}
+// ---------- PHOTO UPLOAD DATA COLLECTION (camera + gallery both saved) ----------
+// compressImage(file|dataURL, maxDim=800, quality=0.7) -> small base64 (localStorage + cloud safe)
+let tempProfilePhoto='';
+function compressImage(src,cb,maxDim,quality){
+  maxDim=maxDim||800;quality=quality||0.7;
+  const img=new Image();
+  img.onload=()=>{
+    try{
+      let w=img.width,h=img.height;
+      const scale=Math.min(1,maxDim/Math.max(w,h));
+      w=Math.round(w*scale);h=Math.round(h*scale);
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',quality));
+    }catch(e){cb(typeof src==='string'?src:'');}
+  };
+  img.onerror=()=>cb(typeof src==='string'?src:'');
+  if(typeof src==='string')img.src=src;
+  else{const rd=new FileReader();rd.onload=()=>{img.src=rd.result;};rd.readAsDataURL(src);}
+}
+function handleProfilePhoto(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  compressImage(f,(small)=>{
+    tempProfilePhoto=small;
+    const pv=document.getElementById('profilePreview');
+    if(pv){pv.src=small;pv.style.display='block';}
+    alert('✅ Profile photo ready! Create ID dabate hi save hogi.');
+  },600,0.65);
+}
+function handlePunchUpload(input){if(input)input.value='';return alert('❌ Gallery/upload Punch me allowed nahi hai!\nSirf Live Front Camera se photo lo 📷');}
 
 // ------------------------------------------------------------
 // JS STEP 8: LIVE LOCATION + 50m GEOFENCE (store range check)
@@ -1139,34 +1414,26 @@ box.innerHTML=`✅ <b>Location captured</b><br>Lat: ${locData.lat}, Lon: ${locDa
 e=>{box.innerHTML='❌ Location Error: '+e.message+'<br>Please turn ON Location and press Allow.';},{enableHighAccuracy:true,timeout:15000});}
 
 // ------------------------------------------------------------
-// JS STEP 9: ATTENDANCE PUNCH — 4 STATUS + 50m GEOFENCE (NO admin holiday, NO back-date)
-// 1️⃣ IN (On Arrival): photo+loc required + within 50m, 10AM–1PM, Sunday block (outside = BLOCK + Absent)
+// JS STEP 9: ATTENDANCE PUNCH — 4 STATUS + 50m GEOFENCE (NO admin holiday, NO back-date, NO Sunday auto)
+// 1️⃣ IN (On Arrival): photo+loc required + within 50m, 8AM–12PM (outside = BLOCK + Absent)
 // 2️⃣ OUT (On Departure): IN required + within 50m, until 11:59:50PM, <6PM = Half Day (outside = BLOCK + Absent)
-// 3️⃣ STORECLOSE: marked by the employee (photo+loc required + within 50m), blocked on Sunday
-// 4️⃣ WEEKOFF: Sunday AUTO + MANUAL on any day (by the employee), photo/loc NOT required
+// 3️⃣ WEEKOFF (Sunday Week Off, MANUAL on any day incl. Sunday — 3rd button), photo/loc NOT required
+// 4️⃣ STORECLOSE: marked by the employee (photo+loc required + within 50m) — 4th button
 // LOC: IN/OUT/StoreClose me lat/lon + Via Link + distM save | workHrs() = IN-OUT diff
 // ------------------------------------------------------------
 function punch(type){
 const now=new Date(), d=todayStr(), t=timeStr(now), nowSec=secsOfNow(now);
 try{const fresh=getEmp().find(x=>x.id.toLowerCase()===String(curEmp.id).toLowerCase());if(fresh)curEmp=fresh;}catch(e){}
 let recs=getRec();let r=recs.find(x=>x.empId===curEmp.id&&x.date===d);
-const sun=isSundayStr(d);
-// ---- 4️⃣ WEEK OFF — MANUAL (employee kisi bhi din) + Sunday AUTO ----
+// ---- 3️⃣ WEEK OFF — MANUAL ONLY (Sunday bhi manual, koi automatic nahi) ----
 if(type==='WEEKOFF'){
   if(r) {renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();return alert('🌴 Week Off is already marked for today.');}
-  if(sun){
-    recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'WeekOff',inTime:'',inPhoto:'',inLat:'',inLon:'',inLocLink:'',outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:'',auto:true});
-    setRec(recs);renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();
-    return alert('🌴 Week Off marked (Sunday Auto) ✅');
-  }
-  if(!confirm('🌴 Mark MANUAL Week Off for today ('+dayName(d)+')?\nIN/OUT will be closed for today after this.'))return;
+  if(!confirm('🌴 Mark Sunday Week Off for today ('+dayName(d)+', '+fmtDate(d)+')?\nIN/OUT/Store Close will be closed for today after this.'))return;
   recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'WeekOff',inTime:'',inPhoto:'',inLat:'',inLon:'',inLocLink:'',outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:'',auto:false,manual:true});
   setRec(recs);renderMyTable();updateTodayStatus();refreshEmpHolidayNotice();
-  return alert('🌴 Week Off marked (Manual) ✅');
+  return alert('🌴 Sunday Week Off marked ✅ (Manual, 3rd button)');
 }
-// ---- On Sunday IN/OUT/StoreClose are all closed (WeekOff auto) ----
-if(sun) return alert('🌴 Today is Sunday — automatic Week Off ✅\nIN / OUT / Store Close are not allowed.');
-// ---- 3️⃣ STORE CLOSE (employee-side + 50m check) ----
+// ---- 4️⃣ STORE CLOSE (employee-side + 50m check, 4th button) ----
 if(type==='STORECLOSE'){
   if(r) return alert('❌ Today\'s record already exists ('+getStatus(r).label+') — Store Close cannot be marked again.');
   if(!photoData) return alert('❌ First 📸 Take Photo → 👀 Preview → ✅ Submit Photo! (Store Close proof)');
@@ -1188,8 +1455,8 @@ if(!gfAll.ok) return alert('⛔ You are outside the Store! Distance: '+gfAll.dis
 const inLink=locLinkOf(locData.lat,locData.lon);
 if(type==='IN'){
 // STEP 9A: No back-date (today only) — no date picker, todayStr() is the key
-// STEP 9C: IN time window 10AM–1PM + 50m geofence
-if(nowSec<IN_START_SEC||nowSec>IN_END_SEC) return alert('⛔ Check-IN is allowed only between 10:00 AM – 1:00 PM!\nCurrent time: '+t+'\n'+(nowSec<IN_START_SEC?'It is not 10 AM yet.':'The 1 PM window has passed.'));
+// STEP 9C: IN time window 8AM–12PM + 50m geofence
+if(nowSec<IN_START_SEC||nowSec>IN_END_SEC) return alert('⛔ Check-IN is allowed only between 8:00 AM – 12:00 PM!\nCurrent time: '+t+'\n'+(nowSec<IN_START_SEC?'It is not 8 AM yet.':'The 12 PM window has passed.'));
 if(r) return alert(r.type&&r.type!=='Duty'?("Today's record already exists ("+getStatus(r).label+")"):("Today's IN is already done: "+r.inTime));
 recs.push({empId:curEmp.id,name:curEmp.name,store:curEmp.store||'',storeArea:curEmp.storeArea||'',storeLink:curEmp.storeLink||'',date:d,type:'Duty',inTime:t,inPhoto:photoData,inLat:locData.lat,inLon:locData.lon,inLocLink:inLink,inDistM:gfAll.dist,outTime:'',outPhoto:'',outLat:'',outLon:'',outLocLink:''});
 alert('✅ Attendance IN successful! ('+gfAll.dist+'m)\n⏰ '+t+'\n📍 '+inLink);}
@@ -1237,13 +1504,12 @@ try{
   const dim=new Date(yy,mmo,0).getDate();
   const isCur=ym===curMonthStr();
   const limit=isCur?new Date().getDate():dim;
-  let expected=0;
-  for(let dd=1;dd<=limit;dd++){const ds=ym+'-'+String(dd).padStart(2,'0');if(!isSundayStr(ds))expected++;}
-  const dutyMarked=p+h+io+sc;
+  let expected=limit;
+  const dutyMarked=p+h+io+sc+wo;
   absent=Math.max(0,expected-dutyMarked);
 }catch(e){}
 const box=document.getElementById('mySummary');
-if(box)box.innerHTML=`📅 <b>${ym}</b> — Present: <b>${p}</b> | Half Day: <b>${h}</b> | IN Only: <b>${io}</b> | 🏬 Store Close: <b>${sc}</b> | 🌴 Week Off: <b>${wo}</b> | Absent*: <b>${absent}</b><br><span style="font-size:12px;color:#64748b">*Absent = duty days (Sundays excluded) with no record. In a new month this view auto-resets (empty) — old data stays safe with Admin.</span>`;
+if(box)box.innerHTML=`📅 <b>${ym}</b> — Present: <b>${p}</b> | Half Day: <b>${h}</b> | IN Only: <b>${io}</b> | 🏬 Store Close: <b>${sc}</b> | 🌴 Week Off: <b>${wo}</b> | Absent*: <b>${absent}</b><br><span style="font-size:12px;color:#64748b">*Absent = days with no record (Sunday manual Week Off included). In a new month this view auto-resets (empty) — old data stays safe with Admin.</span>`;
 if(!all.length)tb.innerHTML='<tr><td colspan="10" style="color:#64748b">No records in this month (reset view in a new month).</td></tr>';}
 function clearAdminFilters(){['fMonth','fDate','fSearch'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});const fe=document.getElementById('fEmp');if(fe)fe.value='';renderAdminTable();}
 function renderAdminTable(){
@@ -1260,7 +1526,8 @@ const storeLink=r.storeLink||(empMap[r.empId]&&empMap[r.empId].storeLink)||'';
 const storeLinkHtml=storeLink?`<a class="maplink" target="_blank" href="${storeLink}">🗺 Open</a>`:'—';
 const isOff=recType(r)!=='Duty';
 const delTag=empMap[r.empId]?'':' <span class="badge grey">Deleted</span>';
-tb.innerHTML+=`<tr><td><b>${r.empId}</b></td><td>${r.name}${delTag}</td><td><b>${storeName}</b></td><td>${storeArea}</td><td>${storeLinkHtml}</td><td>${fmtDate(r.date)}</td><td>${r.inTime||'—'}</td><td>${r.inPhoto?`<img src="${r.inPhoto}" onclick="zoomSrc(this)">`:'—'}</td><td>${r.inLat?`<a class="maplink" target="_blank" href="${inL}">${r.inLat}<br>${r.inLon}<br>🗺 Via Link</a>`:'—'}</td><td>${r.outTime||'—'}</td><td>${r.outPhoto?`<img src="${r.outPhoto}" onclick="zoomSrc(this)">`:'—'}</td><td>${r.outLat?`<a class="maplink" target="_blank" href="${outL}">${r.outLat}<br>${r.outLon}<br>🗺 Via Link</a>`:'—'}</td><td>${isOff?'—':workHrs(r)}</td><td>${statusBadge(r)}</td></tr>`;});}
+const profPhoto=(empMap[r.empId]&&empMap[r.empId].photo)?`<img src="${empMap[r.empId].photo}" onclick="zoomSrc(this)" title="Uploaded profile photo">`:'—';
+tb.innerHTML+=`<tr><td>${profPhoto}</td><td><b>${r.empId}</b></td><td>${r.name}${delTag}</td><td><b>${storeName}</b></td><td>${storeArea}</td><td>${storeLinkHtml}</td><td>${fmtDate(r.date)}</td><td>${r.inTime||'—'}</td><td>${r.inPhoto?`<img src="${r.inPhoto}" onclick="zoomSrc(this)">`:'—'}</td><td>${r.inLat?`<a class="maplink" target="_blank" href="${inL}">${r.inLat}<br>${r.inLon}<br>🗺 Via Link</a>`:'—'}</td><td>${r.outTime||'—'}</td><td>${r.outPhoto?`<img src="${r.outPhoto}" onclick="zoomSrc(this)">`:'—'}</td><td>${r.outLat?`<a class="maplink" target="_blank" href="${outL}">${r.outLat}<br>${r.outLon}<br>🗺 Via Link</a>`:'—'}</td><td>${isOff?'—':workHrs(r)}</td><td>${statusBadge(r)}</td></tr>`;});}
 function zoomSrc(el){document.getElementById('modalImg').src=el.src;document.getElementById('imgModal').classList.remove('hidden');}
 function zoom(s){document.getElementById('modalImg').src=s;document.getElementById('imgModal').classList.remove('hidden');}
 
@@ -1274,7 +1541,7 @@ function zoom(s){document.getElementById('modalImg').src=s;document.getElementBy
 function exportCSV(){
 const recs=getRec();if(!recs.length)return alert('No records found');
 const empMap={};getEmp().forEach(e=>{empMap[e.id]=e;});
-let csv='EmpID,Name,StoreName,StoreArea,StoreLink,Date,Day,Type,InTime,InLat,InLon,InLocLink,OutTime,OutLat,OutLon,OutLocLink,WorkHours,Status\n';
+let csv='EmpID,Name,ProfilePhoto,StoreName,StoreArea,StoreLink,Date,Day,Type,InTime,InLat,InLon,InLocLink,OutTime,OutLat,OutLon,OutLocLink,WorkHours,Status\n';
 recs.forEach(r=>{
 const sn=(r.store||(empMap[r.empId]&&empMap[r.empId].store)||'').replace(/"/g,'""');
 const sa=(r.storeArea||(empMap[r.empId]&&empMap[r.empId].storeArea)||'').replace(/"/g,'""');
@@ -1283,7 +1550,8 @@ const inL=(r.inLocLink||locLinkOf(r.inLat,r.inLon)||'').replace(/"/g,'""');
 const outL=(r.outLocLink||locLinkOf(r.outLat,r.outLon)||'').replace(/"/g,'""');
 const tp=recType(r);
 const wh=tp!=='Duty'?'—':workHrs(r);
-csv+=`${r.empId},"${r.name}","${sn}","${sa}","${sl}",${r.date},${dayName(r.date)},${tp},${r.inTime||''},${r.inLat||''},${r.inLon||''},"${inL}",${r.outTime||''},${r.outLat||''},${r.outLon||''},"${outL}",${wh},${getStatus(r).label}\n`;});
+const hasProf=(empMap[r.empId]&&empMap[r.empId].photo)?'Yes':'No';
+csv+=`${r.empId},"${r.name}",${hasProf},"${sn}","${sa}","${sl}",${r.date},${dayName(r.date)},${tp},${r.inTime||''},${r.inLat||''},${r.inLon||''},"${inL}",${r.outTime||''},${r.outLat||''},${r.outLon||''},"${outL}",${wh},${getStatus(r).label}\n`;});
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='attendance_'+todayStr()+'.csv';a.click();}
 function clearRecords(){document.getElementById('clearModal').classList.remove('hidden');}
 function closeClearModal(){document.getElementById('clearModal').classList.add('hidden');}
@@ -1321,9 +1589,14 @@ document.addEventListener('keydown',function(e){
     }
   }
 });
-// STEP 12B: Init (captcha ready + refresh-proof session restore)
+// STEP 12B: Init — universal OS (Android/iOS/Win/Mac/Linux) + storage + cloud + session
 refreshCaptcha();
-tryRestoreSession();
+updateSyncBadge();
+showEmptyDeviceNote();
+try{checkStorageWarn();}catch(e){}
+// Log device for debugging (Android/iOS/PC sab me visible in console)
+try{console.log('[Get-Attendend] UA:', navigator.userAgent, '| touch:', ('ontouchstart' in window), '| storage:', storageAvailable());}catch(e){}
+cloudPullOnStart().then(()=>{tryRestoreSession();}).catch(()=>{tryRestoreSession();});
 </script>
 </body>
 </html>
