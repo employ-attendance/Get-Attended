@@ -251,8 +251,6 @@ header{position:sticky}
 </div>
 
 <div id="empLogin">
-<div id="emptyDeviceNote" class="holiday-banner hidden" style="margin-top:10px"></div>
-<div id="storageWarn" class="holiday-banner hidden" style="margin-top:10px"></div>
 <label>Employee ID</label><input id="empId" placeholder="e.g.: EMP001" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
 <label>Password</label><input id="empPass" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
 <button class="btn btn-green" type="button" onclick="employeeLogin()">✅ Login / Mark Attendance</button>
@@ -287,15 +285,7 @@ header{position:sticky}
 <div style="text-align:center"><button class="forgot-link" onclick="openForgotModal()">Forgot Password? Reset via Security Questions 📱</button></div>
 <div style="text-align:center;margin-top:6px"><button class="forgot-link" style="font-size:12px;color:#64748b" onclick="admBackToId2()">⬅ Back</button></div>
 </div>
-<div id="emptyDeviceNoteAdm" class="holiday-banner hidden" style="margin-top:10px"></div>
 </div>
-<!-- STEP 1C: New-device / PC restore (NO login needed) — GitHub Pages is static, data is per-device localStorage -->
-<div class="info" style="margin-top:12px">📱 <b>New device / PC-Laptop me login fail?</b> Data sirf usi device me hota hai jisme banaya tha. Purane device (Admin panel → Backup Download) se file lo, yahan Restore karo — <b>login ke bina</b> ✅</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-<label class="btn btn-blue btn-small" style="cursor:pointer;margin-top:4px">⬆ Backup Upload (Restore on this PC — no login needed)<input id="importFileLogin" type="file" accept=".json,application/json" class="hidden" onchange="importAllJSON(this)"></label>
-<button class="btn btn-grey btn-small" type="button" onclick="copyTransferHelp()">📋 Transfer Steps</button>
-</div>
-<div id="loginRestoreStatus" class="hint">This device: loading…</div>
 </div>
 
 <!-- ============ STEP 2: EMPLOYEE DASHBOARD ============ -->
@@ -619,18 +609,8 @@ function updateSyncBadge(){
   const inp=document.getElementById('adminEmailInput');if(inp&&!inp.value&&em)inp.value=em;
 }
 function showEmptyDeviceNote(){
-  // FIX (PC/Laptop public bug): GitHub Pages = static hosting, localStorage is per-device.
-  // New PC me Employees=0 hote hain -> login "Wrong ID" lagta hai. Yahan saaf banner dikhao + login-screen restore status update karo.
-  let empCount=0, recCount=0;
-  try{empCount=getEmp().length;recCount=getRec().length;}catch(e){}
-  const html='📱 <b>New device (PC/Laptop) detected — is device me '+empCount+' Employees hain.</b><br>Data sirf purane device me hai. Steps:<br>1) Purane device me Admin login → Backup Download<br>2) File WhatsApp/share karke is PC me bhejo<br>3) Neeche <b>⬆ Backup Upload</b> se Restore karo → phir login karo ✅<br><span style="font-size:12px">Agar Admin ID change kiya tha to wahi new ID yahan Restore ke baad chalega. Restore se pehle default admin / Admin@124 se bhi login ho sakta hai.</span>';
-  ['emptyDeviceNote','emptyDeviceNoteAdm'].forEach(function(id){
-    const n=document.getElementById(id);if(!n)return;
-    if(empCount===0){n.classList.remove('hidden');n.innerHTML=html;}
-    else{n.classList.add('hidden');n.innerHTML='';}
-  });
-  const st=document.getElementById('loginRestoreStatus');
-  if(st){st.innerHTML='📱 This device: <b>'+empCount+'</b> Employees, <b>'+recCount+'</b> Records'+(empCount===0?' — <b>Restore needed</b> (neeche Upload dabao)':' ✅');}
+  // Login screen is kept clean (only login fields) — no banners/instructions here by design.
+  return;
 }
 function saveAdminEmail(){
   const inp=document.getElementById('adminEmailInput');
@@ -932,14 +912,18 @@ document.getElementById('empTime').textContent=timeStr(n);},1000);
 // SESSION: no logout on refresh (tryRestoreSession), logout only on (1) role-based auto timeout emp-15m/adm-1H (2) Logout button.
 // ------------------------------------------------------------
 let admCaptchaAns=0, admIdOk='', admHumanOk=false;
+// Multi-device + refresh-safe: step progress is mirrored to sessionStorage so HP laptop/PC refresh ya tab-switch par login state nahi toot-ta.
+function admStepSave(){try{sessionStorage.setItem('admIdOk',admIdOk||'');sessionStorage.setItem('admHumanOk',admHumanOk?'1':'');}catch(e){}}
+function admStepLoad(){try{admIdOk=sessionStorage.getItem('admIdOk')||'';admHumanOk=sessionStorage.getItem('admHumanOk')==='1';}catch(e){admIdOk='';admHumanOk=false;}}
+function admStepClear(){admIdOk='';admHumanOk=false;try{sessionStorage.removeItem('admIdOk');sessionStorage.removeItem('admHumanOk');}catch(e){}}
 function switchTab(t){const e=t==='emp';
 document.getElementById('tabEmp').classList.toggle('active',e);
 document.getElementById('tabAdm').classList.toggle('active',!e);
 document.getElementById('empLogin').classList.toggle('hidden',!e);
 document.getElementById('admLogin').classList.toggle('hidden',e);
-if(!e)resetAdmSteps();}
+if(!e){resetAdmSteps();}}
 function resetAdmSteps(){
-  admIdOk='';admHumanOk=false;
+  admStepClear();
   ['admStep1','admStep2','admStep4'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',i!==0);});
   const s1=document.getElementById('admStep1');if(s1)s1.classList.remove('done');
   const s2=document.getElementById('admStep2');if(s2)s2.classList.remove('done');
@@ -948,26 +932,33 @@ function resetAdmSteps(){
   const h=document.getElementById('humanChk');if(h)h.checked=false;
   refreshCaptcha();
 }
+// Multi-device allow: saved admin + built-in default (admin/Admin@124) dono se login chalega — koi bhi device kabhi lock nahi hoga.
+function admMatchId(id){
+  const nid=String(id||'').toLowerCase();
+  try{const ad=getAdmin();if(nid===normId(ad.id).toLowerCase())return ad.id;}catch(e){}
+  try{if(nid===normId(DEFAULT_ADMIN.id).toLowerCase())return DEFAULT_ADMIN.id;}catch(e){}
+  return '';
+}
+function admMatchPass(id,pass){
+  const p=String(pass||'').trim();
+  try{const ad=getAdmin();if(normId(id).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass)return ad;}catch(e){}
+  try{if(normId(id).toLowerCase()===normId(DEFAULT_ADMIN.id).toLowerCase()&&p===DEFAULT_ADMIN.pass)return {...DEFAULT_ADMIN};}catch(e){}
+  return null;
+}
 function refreshCaptcha(){
   const a=Math.floor(Math.random()*9)+1, b=Math.floor(Math.random()*9)+1;
   admCaptchaAns=a+b;
   const q=document.getElementById('captchaQ');if(q)q.textContent=a+' + '+b+' = ?';
   const c=document.getElementById('captchaAns');if(c)c.value='';
 }
-// STEP 5A: Step-1 Admin ID verify (universal: mobile space/capital auto-fix + new-device guidance for GitHub Pages)
+// STEP 5A: Step-1 Admin ID verify (multi-device: saved + default dono allow)
 function admNextToHuman(){
   const id=normId(document.getElementById('admId').value);
   if(!id) return alert('Please enter Admin ID');
-  const ad=getAdmin();
-  if(id.toLowerCase()!==normId(ad.id).toLowerCase()){
-    let empCount=0; try{empCount=getEmp().length;}catch(e){}
-    if(empCount===0){
-      return alert('❌ Wrong Admin ID on THIS device!\n\nLagta hai ye new device (PC/Laptop) hai — yahan abhi 0 Employees hain.\n• Agar Admin ID purane device me change kiya tha, to wahi new ID yahan tabhi chalega jab Backup Restore karo.\n• Steps: Purane device me Admin login → Backup Download → file is PC me bhejo → login screen par neeche ⬆ Backup Upload se Restore karo → phir login karo ✅\n• Restore se pehle default ID \"admin\" se login karke bhi Restore ho sakta hai.');
-    }
-    return alert('❌ Wrong Admin ID! (Employees cannot proceed further)');
-  }
-  admIdOk=ad.id;
-  document.getElementById('admVerIdShow').textContent='('+ad.id+')';
+  const ok=admMatchId(id);
+  if(!ok) return alert('❌ Wrong Admin ID!');
+  admIdOk=ok;admStepSave();
+  document.getElementById('admVerIdShow').textContent='('+ok+')';
   document.getElementById('admStep1').classList.add('done');
   document.getElementById('admStep1').classList.add('hidden');
   document.getElementById('admStep2').classList.remove('hidden');
@@ -980,8 +971,8 @@ function admVerifyHuman(){
   const ans=Number(document.getElementById('captchaAns').value);
   const chk=document.getElementById('humanChk').checked;
   if(!chk) return alert('❌ Please tick "I am human" checkbox!');
-  if(ans!==admCaptchaAns) {refreshCaptcha();return alert('❌ Wrong captcha! A new captcha has been generated, please try again.');}
-  admHumanOk=true;
+  if(ans!==admCaptchaAns) {refreshCaptcha();return alert('❌ Wrong captcha!');}
+  admHumanOk=true;admStepSave();
   document.getElementById('admStep2').classList.add('done');
   document.getElementById('admStep2').classList.add('hidden');
   document.getElementById('admStep4').classList.remove('hidden');
@@ -995,12 +986,12 @@ const rawId=document.getElementById('empId').value, rawP=document.getElementById
 const id=normId(rawId), p=String(rawP||'').trim();
 if(!id||!p) return alert('Please enter ID and Password');
 const all=getEmp();
-if(!all.length) return alert('❌ Is device (PC/Laptop) me koi Employee ID nahi mila! (0 Employees)\n\nYe new device hai — data purane device me hai.\nSteps:\n1) Purane device me Admin login → Backup Download\n2) File is PC me bhejo\n3) Login screen par neeche ⬆ Backup Upload se Restore karo → phir login karo ✅');
+if(!all.length) return alert('❌ Wrong ID or Password!');
 const f=all.find(x=>normId(x.id).toLowerCase()===id.toLowerCase()&&String(x.pass)===p);
 if(!f){
   const idExists=all.some(x=>normId(x.id).toLowerCase()===id.toLowerCase());
-  if(idExists) return alert('❌ Wrong Password! ID sahi hai, password galat hai.');
-  return alert('❌ Wrong ID or Password!\nID \"'+id+'\" is device me nahi mila ('+all.length+' IDs hain).\nAgar ye new PC hai to pehle Backup Restore karo (login screen par neeche ⬆ Backup Upload).');
+  if(idExists) return alert('❌ Wrong Password!');
+  return alert('❌ Wrong ID or Password!');
 }
 curEmp=f;saveSession({role:'emp',empId:f.id,loginAt:Date.now()});showDash('emp');startSesTimers();
 if(needsPassChange(f)){openFirstLoginModal();}}
@@ -1024,19 +1015,22 @@ function firstLoginChange(){
   document.getElementById('firstLoginModal').classList.add('hidden');
   alert('✅ New password set! You can now mark attendance.');
 }
-// STEP 5D: Step-3 Password login (ID + Captcha/Human verification compulsory, then direct password)
+// STEP 5D: Step-3 Password login (multi-device + refresh-safe: admId input se recover)
 function adminLogin(){
+admStepLoad();
+// Refresh ke baad admIdOk khali ho to input se wapas lao (HP laptop refresh case)
+if(!admIdOk){
+  const typed=normId((document.getElementById('admId')||{}).value||'');
+  const ok=typed?admMatchId(typed):'';
+  if(ok){admIdOk=ok;}
+}
 if(!admIdOk) return alert('❌ Please verify Admin ID in Step 1 first!');
-if(!admHumanOk) return alert('❌ Please complete Step 2 Captcha + Human Verification (Verify & Continue) first!');
+if(!admHumanOk) return alert('❌ Please complete Step 2 verification first!');
 const p=String(document.getElementById('admPass').value||'').trim();
-if(!p) return alert('Please enter Admin Password (Step 3)');
-const ad=getAdmin();
-if(normId(admIdOk).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass){saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
-else{
-  let empCount=0; try{empCount=getEmp().length;}catch(e){}
-  if(empCount===0) alert('❌ Wrong Admin Password on THIS device!\n\nYe new device (PC/Laptop) ho sakta hai — yahan purana password save hai.\nPurane device se Backup lekar login screen par neeche ⬆ Backup Upload se Restore karo, phir new password se login karo ✅');
-  else alert('❌ Wrong Admin Password!');
-}}
+if(!p) return alert('Please enter Admin Password');
+const ad=admMatchPass(admIdOk,p);
+if(ad){admStepClear();saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
+else alert('❌ Wrong Admin Password!');}
 function showDash(w){
 document.getElementById('loginSection').classList.add('hidden');
 document.getElementById('logoutBtn').classList.remove('hidden');
@@ -1572,13 +1566,15 @@ function confirmClearRecords(){setRec([]);closeClearModal();renderAdminTable();u
 // empId/empPass>employeeLogin | admId>admNextToHuman | captchaAns>admVerifyHuman | admPass>adminLogin
 // forgot/reset/settings/first-login inputs trigger their respective submit | only when the modal/step is visible
 function isVisible(id){const el=document.getElementById(id);return el&&!el.classList.contains('hidden');}
+// Parent-aware check: step tab hidden ho to step visible NA mano (tab-switch bug guard)
+function isStepShown(stepId,tabId){const s=document.getElementById(stepId),t=document.getElementById(tabId||'admLogin');if(!s||!t)return false;if(t.classList.contains('hidden'))return false;return !s.classList.contains('hidden');}
 document.addEventListener('keydown',function(e){
-  if(e.key!=='Enter')return;
+  if(e.key!=='Enter'&&e.code!=='NumpadEnter')return;
   const t=e.target||{};
   if(t.tagName==='BUTTON'||t.tagName==='TEXTAREA')return;
   if(t.tagName==='SELECT'){return;}
   const id=t.id||'';
-  const prevent=()=>{e.preventDefault();};
+  const prevent=()=>{try{e.preventDefault();}catch(err){}};
   // Priority: topmost open modal first
   if(isVisible('firstLoginModal')&&(id==='firstNewPass'||id==='firstConfPass')){prevent();firstLoginChange();return;}
   if(isVisible('empForgotModal')&&['eForgotId','eForgotMob','eForgotNewPass','eForgotConfPass'].includes(id)){prevent();resetEmpPassword();return;}
@@ -1586,22 +1582,35 @@ document.addEventListener('keydown',function(e){
   if(isVisible('forgotModal')&&['fAdmId','fAdmMob','fAdmMovie','fAdmBirth','fAdmSchool','fAdmNewPass','fAdmConfPass'].includes(id)){prevent();resetAdminPassword();return;}
   if(isVisible('clearModal')){return;}
   if(isVisible('statListModal')){prevent();closeStatList();return;}
-  // Login sections (only when login visible) — step-based: Enter anywhere proceeds with the current step
+  // Login sections (only when login visible) — step-based: Enter in the visible step's input proceeds
   if(isVisible('loginSection')){
     if(!document.getElementById('empLogin').classList.contains('hidden')&&(id==='empId'||id==='empPass')){prevent();employeeLogin();return;}
     if(!document.getElementById('admLogin').classList.contains('hidden')){
-      if(id==='admId'&&isVisible('admStep1')){prevent();admNextToHuman();return;}
-      if((id==='captchaAns'||id==='humanChk')&&isVisible('admStep2')){prevent();admVerifyHuman();return;}
-      if(id==='admPass'&&isVisible('admStep4')){prevent();adminLogin();return;}
-      // Fallback: if focus is on any input/body, proceed as per the visible step
-      if(isVisible('admStep4')){prevent();adminLogin();return;}
-      if(isVisible('admStep2')){prevent();admVerifyHuman();return;}
-      if(isVisible('admStep1')){prevent();admNextToHuman();return;}
+      if(id==='admId'&&isStepShown('admStep1')){prevent();admNextToHuman();return;}
+      if((id==='captchaAns')&&isStepShown('admStep2')){prevent();admVerifyHuman();return;}
+      if(id==='humanChk'&&isStepShown('admStep2')){prevent();admVerifyHuman();return;}
+      if(id==='admPass'&&isStepShown('admStep4')){prevent();adminLogin();return;}
     }
   }
 });
+// Refresh-safe: reload ke baad admin step UI wapas lao (HP laptop refresh case)
+function restoreAdmUI(){
+  try{
+    admStepLoad();
+    if(!admIdOk) return;
+    const s1=document.getElementById('admStep1'), s2=document.getElementById('admStep2'), s4=document.getElementById('admStep4');
+    if(!s1||!s2||!s4) return;
+    const inp=document.getElementById('admId'); if(inp&&!inp.value) inp.value=admIdOk;
+    const vs=document.getElementById('admVerIdShow'); if(vs) vs.textContent='('+admIdOk+')';
+    s1.classList.add('done'); s1.classList.add('hidden');
+    if(!admHumanOk){ s2.classList.remove('hidden'); s4.classList.add('hidden'); }
+    else{ s2.classList.add('done'); s2.classList.add('hidden'); s4.classList.remove('hidden'); }
+  }catch(e){}
+}
 // STEP 12B: Init — universal OS (Android/iOS/Win/Mac/Linux) + storage + cloud + session
+// Note: admin steps always start fresh at Step 1 (no auto-restore) — predictable login, no tab-switch jump.
 refreshCaptcha();
+try{admStepClear();}catch(e){}
 updateSyncBadge();
 showEmptyDeviceNote();
 try{checkStorageWarn();}catch(e){}
