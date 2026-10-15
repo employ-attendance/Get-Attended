@@ -287,7 +287,15 @@ header{position:sticky}
 <div style="text-align:center"><button class="forgot-link" onclick="openForgotModal()">Forgot Password? Reset via Security Questions 📱</button></div>
 <div style="text-align:center;margin-top:6px"><button class="forgot-link" style="font-size:12px;color:#64748b" onclick="admBackToId2()">⬅ Back</button></div>
 </div>
+<div id="emptyDeviceNoteAdm" class="holiday-banner hidden" style="margin-top:10px"></div>
 </div>
+<!-- STEP 1C: New-device / PC restore (NO login needed) — GitHub Pages is static, data is per-device localStorage -->
+<div class="info" style="margin-top:12px">📱 <b>New device / PC-Laptop me login fail?</b> Data sirf usi device me hota hai jisme banaya tha. Purane device (Admin panel → Backup Download) se file lo, yahan Restore karo — <b>login ke bina</b> ✅</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+<label class="btn btn-blue btn-small" style="cursor:pointer;margin-top:4px">⬆ Backup Upload (Restore on this PC — no login needed)<input id="importFileLogin" type="file" accept=".json,application/json" class="hidden" onchange="importAllJSON(this)"></label>
+<button class="btn btn-grey btn-small" type="button" onclick="copyTransferHelp()">📋 Transfer Steps</button>
+</div>
+<div id="loginRestoreStatus" class="hint">This device: loading…</div>
 </div>
 
 <!-- ============ STEP 2: EMPLOYEE DASHBOARD ============ -->
@@ -611,8 +619,18 @@ function updateSyncBadge(){
   const inp=document.getElementById('adminEmailInput');if(inp&&!inp.value&&em)inp.value=em;
 }
 function showEmptyDeviceNote(){
-  const n=document.getElementById('emptyDeviceNote');if(!n)return;
-  n.classList.add('hidden');n.innerHTML='';
+  // FIX (PC/Laptop public bug): GitHub Pages = static hosting, localStorage is per-device.
+  // New PC me Employees=0 hote hain -> login "Wrong ID" lagta hai. Yahan saaf banner dikhao + login-screen restore status update karo.
+  let empCount=0, recCount=0;
+  try{empCount=getEmp().length;recCount=getRec().length;}catch(e){}
+  const html='📱 <b>New device (PC/Laptop) detected — is device me '+empCount+' Employees hain.</b><br>Data sirf purane device me hai. Steps:<br>1) Purane device me Admin login → Backup Download<br>2) File WhatsApp/share karke is PC me bhejo<br>3) Neeche <b>⬆ Backup Upload</b> se Restore karo → phir login karo ✅<br><span style="font-size:12px">Agar Admin ID change kiya tha to wahi new ID yahan Restore ke baad chalega. Restore se pehle default admin / Admin@124 se bhi login ho sakta hai.</span>';
+  ['emptyDeviceNote','emptyDeviceNoteAdm'].forEach(function(id){
+    const n=document.getElementById(id);if(!n)return;
+    if(empCount===0){n.classList.remove('hidden');n.innerHTML=html;}
+    else{n.classList.add('hidden');n.innerHTML='';}
+  });
+  const st=document.getElementById('loginRestoreStatus');
+  if(st){st.innerHTML='📱 This device: <b>'+empCount+'</b> Employees, <b>'+recCount+'</b> Records'+(empCount===0?' — <b>Restore needed</b> (neeche Upload dabao)':' ✅');}
 }
 function saveAdminEmail(){
   const inp=document.getElementById('adminEmailInput');
@@ -668,21 +686,29 @@ function importAllJSON(input){
       const d=JSON.parse(rd.result);
       const emp=d.emp||d.employees||[];
       const rec=d.rec||d.records||[];
-      if(!emp.length&&!rec.length) return alert('❌ File me koi data nahi mila!');
+      if(!emp.length&&!rec.length&&!(d.admin&&d.admin.id)) return alert('❌ File me koi data nahi mila!');
       const mergedEmp=mergeEmp(getEmp(),emp);
       const mergedRec=mergeRec(getRec(),rec);
       safeSet(K_EMP,mergedEmp);safeSet(K_REC,mergedRec);
-      if(d.admin&&d.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(d.admin));renderAdminInfo();}catch(e){}}
+      if(d.admin&&d.admin.id){try{localStorage.setItem(K_ADMIN,JSON.stringify(d.admin));}catch(e){}try{renderAdminInfo();}catch(e){}}
       if(d.adminEmail&&isEmailValid(d.adminEmail)){try{localStorage.setItem(K_EMAIL,String(d.adminEmail).trim());}catch(e){}}
-      renderEmpTable();renderStoreAreas();renderAdminTable();updateStats();showEmptyDeviceNote();queueCloudPush();updateSyncBadge();
-      alert('✅ Backup imported! Employees: '+mergedEmp.length+', Records: '+mergedRec.length+'\nAb any-device login chalega ✅');
-    }catch(e){alert('❌ Invalid backup file!');}
-    input.value='';
+      // Safe refresh: login screen se call ho to tables hidden bhi ho sakte hain — crash nahi hona chahiye
+      try{renderEmpTable();}catch(e){}
+      try{renderStoreAreas();}catch(e){}
+      try{renderAdminTable();}catch(e){}
+      try{updateStats();}catch(e){}
+      try{resetAdmSteps();}catch(e){}
+      try{showEmptyDeviceNote();}catch(e){}
+      try{queueCloudPush();}catch(e){}
+      try{updateSyncBadge();}catch(e){}
+      alert('✅ Backup restored on THIS device! Employees: '+mergedEmp.length+', Records: '+mergedRec.length+'\nAb Employee + Admin dono login honge ✅');
+    }catch(e){alert('❌ Invalid backup file! Purane device se dobara Backup Download karke bhejo.');}
+    try{input.value='';}catch(e){}
   };
   rd.readAsText(f);
 }
 function copyTransferHelp(){
-  const t='Dusre device me login kaise kare:\n1. Is device (Admin) se Backup Download karo\n2. File WhatsApp/share karke dusre device me bhejo\n3. Dusre device pe website kholo, Admin login karo, Backup Upload karo\n4. Ab Employee + Admin dono login honge ✅';
+  const t='Dusre device / PC me login kaise kare:\n1. Purane device me Admin login → Backup Download karo\n2. File WhatsApp/share karke naye device (PC) me bhejo\n3. Naye device me website kholo — LOGIN KE BINA neeche Backup Upload se Restore karo\n4. Ab Employee + Admin dono login honge ✅\n(Restore se pehle naye PC me default admin / Admin@124 se bhi login ho sakta hai)';
   try{navigator.clipboard.writeText(t);alert('📋 Steps copied! Paste karke share karo.');}catch(e){alert(t);}
 }
 // STEP 0A: Month helpers (employee month-wise view + new-month auto reset)
@@ -928,12 +954,18 @@ function refreshCaptcha(){
   const q=document.getElementById('captchaQ');if(q)q.textContent=a+' + '+b+' = ?';
   const c=document.getElementById('captchaAns');if(c)c.value='';
 }
-// STEP 5A: Step-1 Admin ID verify (universal: mobile space/capital auto-fix)
+// STEP 5A: Step-1 Admin ID verify (universal: mobile space/capital auto-fix + new-device guidance for GitHub Pages)
 function admNextToHuman(){
   const id=normId(document.getElementById('admId').value);
   if(!id) return alert('Please enter Admin ID');
   const ad=getAdmin();
-  if(id.toLowerCase()!==normId(ad.id).toLowerCase()) return alert('❌ Wrong Admin ID! (Employees cannot proceed further)');
+  if(id.toLowerCase()!==normId(ad.id).toLowerCase()){
+    let empCount=0; try{empCount=getEmp().length;}catch(e){}
+    if(empCount===0){
+      return alert('❌ Wrong Admin ID on THIS device!\n\nLagta hai ye new device (PC/Laptop) hai — yahan abhi 0 Employees hain.\n• Agar Admin ID purane device me change kiya tha, to wahi new ID yahan tabhi chalega jab Backup Restore karo.\n• Steps: Purane device me Admin login → Backup Download → file is PC me bhejo → login screen par neeche ⬆ Backup Upload se Restore karo → phir login karo ✅\n• Restore se pehle default ID \"admin\" se login karke bhi Restore ho sakta hai.');
+    }
+    return alert('❌ Wrong Admin ID! (Employees cannot proceed further)');
+  }
   admIdOk=ad.id;
   document.getElementById('admVerIdShow').textContent='('+ad.id+')';
   document.getElementById('admStep1').classList.add('done');
@@ -963,12 +995,12 @@ const rawId=document.getElementById('empId').value, rawP=document.getElementById
 const id=normId(rawId), p=String(rawP||'').trim();
 if(!id||!p) return alert('Please enter ID and Password');
 const all=getEmp();
-if(!all.length) return alert('❌ Wrong ID or Password!');
+if(!all.length) return alert('❌ Is device (PC/Laptop) me koi Employee ID nahi mila! (0 Employees)\n\nYe new device hai — data purane device me hai.\nSteps:\n1) Purane device me Admin login → Backup Download\n2) File is PC me bhejo\n3) Login screen par neeche ⬆ Backup Upload se Restore karo → phir login karo ✅');
 const f=all.find(x=>normId(x.id).toLowerCase()===id.toLowerCase()&&String(x.pass)===p);
 if(!f){
   const idExists=all.some(x=>normId(x.id).toLowerCase()===id.toLowerCase());
-  if(idExists) return alert('❌ Wrong Password!');
-  return alert('❌ Wrong ID or Password!');
+  if(idExists) return alert('❌ Wrong Password! ID sahi hai, password galat hai.');
+  return alert('❌ Wrong ID or Password!\nID \"'+id+'\" is device me nahi mila ('+all.length+' IDs hain).\nAgar ye new PC hai to pehle Backup Restore karo (login screen par neeche ⬆ Backup Upload).');
 }
 curEmp=f;saveSession({role:'emp',empId:f.id,loginAt:Date.now()});showDash('emp');startSesTimers();
 if(needsPassChange(f)){openFirstLoginModal();}}
@@ -1000,7 +1032,11 @@ const p=String(document.getElementById('admPass').value||'').trim();
 if(!p) return alert('Please enter Admin Password (Step 3)');
 const ad=getAdmin();
 if(normId(admIdOk).toLowerCase()===normId(ad.id).toLowerCase()&&p===ad.pass){saveSession({role:'adm',loginAt:Date.now()});showDash('adm');startSesTimers();}
-else alert('❌ Wrong Admin Password!');}
+else{
+  let empCount=0; try{empCount=getEmp().length;}catch(e){}
+  if(empCount===0) alert('❌ Wrong Admin Password on THIS device!\n\nYe new device (PC/Laptop) ho sakta hai — yahan purana password save hai.\nPurane device se Backup lekar login screen par neeche ⬆ Backup Upload se Restore karo, phir new password se login karo ✅');
+  else alert('❌ Wrong Admin Password!');
+}}
 function showDash(w){
 document.getElementById('loginSection').classList.add('hidden');
 document.getElementById('logoutBtn').classList.remove('hidden');
